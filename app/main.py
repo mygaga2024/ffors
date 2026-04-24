@@ -12,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.models import init_db
 from app.api.v1 import rates as rates_router
+from app.api.v1 import vendors as vendors_router
+from app.api.v1 import ports as ports_router
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.main")
@@ -38,7 +40,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="FFORS — Freight Forwarder Ocean Rate System",
     description="货代海运报价管理系统 API",
-    version="0.1.0",
+    version="0.2.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
@@ -61,6 +63,8 @@ app.add_middleware(
 # ─────────────────────────────────────────────
 
 app.include_router(rates_router.router, prefix="/api/v1")
+app.include_router(vendors_router.router, prefix="/api/v1")
+app.include_router(ports_router.router, prefix="/api/v1")
 
 
 # ─────────────────────────────────────────────
