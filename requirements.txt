@@ -19,5 +19,8 @@ openpyxl>=3.1.0
 # --- File Upload ---
 python-multipart>=0.0.18
 
+# --- HTTP Client (通知推送 & AI API) ---
+httpx>=0.28.0
+
 # --- Configuration ---
 pydantic-settings>=2.6.0

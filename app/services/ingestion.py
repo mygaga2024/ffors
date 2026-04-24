@@ -20,6 +20,7 @@ from app.models.port import Port
 from app.models.rate import OceanRate
 from app.schemas.rate import RateBatchImportResult, ImportError as ImportErrorSchema
 from app.services.analytics import calculate_price_changes
+from app.services.notification import should_alert, send_wecom_alert
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.services.ingestion")
@@ -182,6 +183,49 @@ def parse_excel(file_bytes: bytes) -> pd.DataFrame:
     return df
 
 
+async def _trigger_alerts_and_ai(alert_rates: list[OceanRate]) -> None:
+    """
+    异步后台任务：对达到告警阈值的报价执行通知推送和 AI 分析。
+    此函数在 db.commit() 之后被 asyncio.create_task 调用，
+    不会阻塞导入 API 的响应。
+    """
+    import asyncio
+    from app.models.base import get_async_session
+    from app.services.ai_analyzer import batch_analyze_alerts
+
+    # --- 1. 企业微信告警推送（立即执行） ---
+    for rate in alert_rates:
+        try:
+            await send_wecom_alert(
+                pol_code=rate.pol_code,
+                pod_code=rate.pod_code,
+                carrier=rate.carrier,
+                price_20gp=str(rate.price_20gp) if rate.price_20gp else None,
+                price_40gp=str(rate.price_40gp) if rate.price_40gp else None,
+                wow_20gp=rate.wow_20gp,
+                wow_40gp=rate.wow_40gp,
+                source_file=rate.source_file,
+            )
+        except Exception as e:
+            logger.error(f"告警推送异常: {rate.pol_code}→{rate.pod_code}, {e}")
+
+    # --- 2. AI 分析（后台静默执行） ---
+    try:
+        session_factory = get_async_session()
+        async with session_factory() as db:
+            # 重新从数据库加载这些 rate（因为上面的 session 已关闭）
+            from sqlalchemy import select
+            rate_ids = [r.id for r in alert_rates if r.id]
+            if rate_ids:
+                from app.models.rate import OceanRate as RateModel
+                stmt = select(RateModel).where(RateModel.id.in_(rate_ids))
+                result = await db.execute(stmt)
+                fresh_rates = list(result.scalars().all())
+                await batch_analyze_alerts(fresh_rates, db)
+    except Exception as e:
+        logger.error(f"后台 AI 分析异常: {e}")
+
+
 async def batch_import_rates(
     df: pd.DataFrame,
     source_file: str,
@@ -189,9 +233,11 @@ async def batch_import_rates(
 ) -> RateBatchImportResult:
     """
     将 DataFrame 中的报价数据批量写入数据库。
-    流程：解析行 → 构造 ORM → 计算 WoW/MoM → 提交入库。
+    流程：解析行 → 构造 ORM → 计算 WoW/MoM → 提交入库 → 触发告警+AI。
     单条失败不中断整体任务（遵循 DEVELOPMENT_PROTOCOL.md §6）。
     """
+    import asyncio
+
     port_lookup = await _build_port_lookup(db)
 
     total = len(df)
@@ -280,6 +326,15 @@ async def batch_import_rates(
                 source_file=source_file,
             )
 
+        # --- 筛选告警记录并触发异步后台任务 ---
+        alert_rates = [
+            r for r in new_rates
+            if should_alert(r.wow_20gp, r.wow_40gp)
+        ]
+        if alert_rates:
+            logger.info(f"检测到 {len(alert_rates)} 条价格异常波动记录，触发告警")
+            asyncio.create_task(_trigger_alerts_and_ai(alert_rates))
+
     return RateBatchImportResult(
         total=total,
         success=success,
@@ -287,4 +342,5 @@ async def batch_import_rates(
         errors=errors,
         source_file=source_file,
     )
+
 
