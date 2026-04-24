@@ -18,8 +18,8 @@ from pydantic import BaseModel, Field, field_validator
 class RateBase(BaseModel):
     """报价单基础字段（新建和更新共用）。"""
 
-    pol_code: str = Field(..., min_length=2, max_length=10, description="起运港代码 (如 CNSHA)")
-    pod_code: str = Field(..., min_length=2, max_length=10, description="目的港代码 (如 NLRTM)")
+    pol_code: str = Field(..., min_length=2, max_length=50, description="起运港代码 (如 CNSHA)")
+    pod_code: str = Field(..., min_length=2, max_length=50, description="目的港代码 (如 NLRTM)")
     carrier: str = Field(..., min_length=1, max_length=50, description="船公司")
     vendor_id: Optional[int] = Field(None, description="报价供应商 ID")
 
