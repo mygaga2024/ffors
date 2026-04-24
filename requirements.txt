@@ -24,3 +24,6 @@ httpx>=0.28.0
 
 # --- Configuration ---
 pydantic-settings>=2.6.0
+
+# --- Scheduling ---
+apscheduler>=3.10.4

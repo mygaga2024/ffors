@@ -14,6 +14,7 @@ from app.models import init_db
 from app.api.v1 import rates as rates_router
 from app.api.v1 import vendors as vendors_router
 from app.api.v1 import ports as ports_router
+from app.services.scheduler import start_scheduler, stop_scheduler
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.main")
@@ -29,7 +30,9 @@ async def lifespan(app: FastAPI):
     logger.info("FFORS 服务启动中...")
     await init_db()
     logger.info("数据库连接池初始化完成")
+    start_scheduler()
     yield
+    stop_scheduler()
     logger.info("FFORS 服务关闭")
 
 

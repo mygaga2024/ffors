@@ -138,3 +138,41 @@ async def send_wecom_alert(
     except Exception as e:
         logger.error(f"告警推送异常: {e}")
         return False
+
+
+async def send_wecom_report(markdown_content: str) -> bool:
+    """
+    发送通用的企业微信群机器人报告（如晨报）。
+    """
+    webhook_key = settings.wecom_webhook_key
+    if not webhook_key:
+        logger.warning("未配置 WECOM_WEBHOOK_KEY，跳过晨报推送")
+        return False
+
+    payload = {
+        "msgtype": "markdown",
+        "markdown": {"content": markdown_content},
+    }
+
+    url = f"{WECOM_WEBHOOK_BASE}?key={webhook_key}"
+
+    try:
+        proxies = settings.http_proxy or None
+
+        async with httpx.AsyncClient(proxy=proxies, timeout=15.0) as client:
+            response = await client.post(url, json=payload)
+            result = response.json()
+
+        if result.get("errcode") == 0:
+            logger.info("晨报推送成功")
+            return True
+        else:
+            logger.error(
+                f"晨报推送失败: errcode={result.get('errcode')}, "
+                f"errmsg={result.get('errmsg')}"
+            )
+            return False
+
+    except Exception as e:
+        logger.error(f"晨报推送异常: {e}")
+        return False
