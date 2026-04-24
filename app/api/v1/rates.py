@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import OceanRate, get_async_session
 from app.schemas.rate import RateCreate, RateResponse, RateBatchImportResult
+from app.services.ingestion import parse_excel, batch_import_rates
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.api.rates")
@@ -101,7 +102,6 @@ async def get_rate(
 
 # ─────────────────────────────────────────────
 # POST /api/v1/rates/import/excel — Excel 批量导入
-# （业务逻辑由 services/ingestion.py 实现，批次 3 填充）
 # ─────────────────────────────────────────────
 
 @router.post(
@@ -125,11 +125,34 @@ async def import_rates_from_excel(
 
     logger.info(f"收到 Excel 导入请求: 文件名={file.filename}")
 
-    # ⚠️ 业务逻辑由 ingestion.py 实现（批次 3），当前返回占位响应
-    return RateBatchImportResult(
-        total=0,
-        success=0,
-        failed=0,
-        errors=[],
-        source_file=file.filename,
+    # 读取文件内容
+    try:
+        file_bytes = await file.read()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"文件读取失败: {e}",
+        )
+
+    # 解析 Excel
+    try:
+        df = parse_excel(file_bytes)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"Excel 解析异常: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Excel 文件解析失败: {e}",
+        )
+
+    # 批量导入
+    result = await batch_import_rates(df, source_file=file.filename, db=db)
+    logger.info(
+        f"导入完成: {result.success}/{result.total} 成功, "
+        f"{result.failed} 失败, 文件={file.filename}"
     )
+    return result
