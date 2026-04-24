@@ -7,6 +7,7 @@ from app.models.base import Base, get_async_engine, get_async_session, init_db
 from app.models.port import Port
 from app.models.vendor import Vendor
 from app.models.rate import OceanRate
+from app.models.news import MaritimeNews
 
 __all__ = [
     "Base",
@@ -16,4 +17,5 @@ __all__ = [
     "Port",
     "Vendor",
     "OceanRate",
+    "MaritimeNews",
 ]

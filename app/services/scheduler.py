@@ -11,6 +11,7 @@ from sqlalchemy import select, func
 from app.models.base import get_async_session
 from app.models.rate import OceanRate
 from app.services.notification import send_wecom_report
+from app.services.rss_fetcher import fetch_and_store_news
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.services.scheduler")
@@ -84,14 +85,22 @@ def start_scheduler():
     if _scheduler is None:
         _scheduler = AsyncIOScheduler()
         
-        # 每天早上 9:00 (根据服务器时区，通常是 UTC，此处设定为固定的 UTC 小时。如果服务器是北京时间，可按需调整)
-        # 此处使用简单的 cron 表达式
+        # 每天早上 9:00 晨报
         _scheduler.add_job(
             generate_morning_report,
             "cron",
             hour=1,  # UTC 1:00 = 北京时间 9:00
             minute=0,
             id="morning_report",
+            replace_existing=True,
+        )
+
+        # 每 4 小时抓取一次 RSS 航运新闻
+        _scheduler.add_job(
+            fetch_and_store_news,
+            "interval",
+            hours=4,
+            id="rss_fetcher",
             replace_existing=True,
         )
         
