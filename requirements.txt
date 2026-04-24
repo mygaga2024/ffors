@@ -1,0 +1,23 @@
+# ============================================================
+# FFORS Python Dependencies
+# 新增依赖须在 PR 中说明理由 (DEVELOPMENT_PROTOCOL.md §5)
+# ============================================================
+
+# --- Web Framework ---
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# --- ORM & Database ---
+sqlalchemy[asyncio]>=2.0.36
+asyncpg>=0.30.0
+alembic>=1.14.0
+
+# --- Data Processing ---
+pandas>=2.2.0
+openpyxl>=3.1.0
+
+# --- File Upload ---
+python-multipart>=0.0.18
+
+# --- Configuration ---
+pydantic-settings>=2.6.0

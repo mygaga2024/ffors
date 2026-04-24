@@ -1,0 +1,1687 @@
+[
+  {
+    "code": "CNSHA",
+    "name_en": "Shanghai",
+    "name_cn": "上海",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "SHA",
+      "上海港"
+    ]
+  },
+  {
+    "code": "CNNGB",
+    "name_en": "Ningbo",
+    "name_cn": "宁波",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "NGB",
+      "宁波港"
+    ]
+  },
+  {
+    "code": "CNSZX",
+    "name_en": "Shenzhen",
+    "name_cn": "深圳",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "SZX",
+      "深圳港",
+      "SHEKOU"
+    ]
+  },
+  {
+    "code": "CNTAO",
+    "name_en": "Qingdao",
+    "name_cn": "青岛",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "TAO",
+      "青岛港"
+    ]
+  },
+  {
+    "code": "CNXMN",
+    "name_en": "Xiamen",
+    "name_cn": "厦门",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "XMN",
+      "厦门港"
+    ]
+  },
+  {
+    "code": "CNDLC",
+    "name_en": "Dalian",
+    "name_cn": "大连",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "DLC",
+      "大连港"
+    ]
+  },
+  {
+    "code": "CNTSN",
+    "name_en": "Tianjin",
+    "name_cn": "天津",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "TSN",
+      "天津港",
+      "XINGANG"
+    ]
+  },
+  {
+    "code": "CNGZG",
+    "name_en": "Guangzhou",
+    "name_cn": "广州",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "CAN",
+      "广州港",
+      "NANSHA"
+    ]
+  },
+  {
+    "code": "CNLYG",
+    "name_en": "Lianyungang",
+    "name_cn": "连云港",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "LYG"
+    ]
+  },
+  {
+    "code": "CNFOC",
+    "name_en": "Fuzhou",
+    "name_cn": "福州",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "FOC"
+    ]
+  },
+  {
+    "code": "CNTXG",
+    "name_en": "Tangshan",
+    "name_cn": "唐山",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "TXG"
+    ]
+  },
+  {
+    "code": "CNZUH",
+    "name_en": "Zhuhai",
+    "name_cn": "珠海",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "ZUH"
+    ]
+  },
+  {
+    "code": "CNZJG",
+    "name_en": "Zhangjiagang",
+    "name_cn": "张家港",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "ZJG"
+    ]
+  },
+  {
+    "code": "CNNKG",
+    "name_en": "Nanjing",
+    "name_cn": "南京",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "NKG"
+    ]
+  },
+  {
+    "code": "CNSWA",
+    "name_en": "Shantou",
+    "name_cn": "汕头",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "SWA"
+    ]
+  },
+  {
+    "code": "CNWHI",
+    "name_en": "Wuhan",
+    "name_cn": "武汉",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "WUH"
+    ]
+  },
+  {
+    "code": "CNCKG",
+    "name_en": "Chongqing",
+    "name_cn": "重庆",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "CKG"
+    ]
+  },
+  {
+    "code": "CNYPG",
+    "name_en": "Yingkou",
+    "name_cn": "营口",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "YKO"
+    ]
+  },
+  {
+    "code": "CNRZH",
+    "name_en": "Rizhao",
+    "name_cn": "日照",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "RZH"
+    ]
+  },
+  {
+    "code": "CNDDG",
+    "name_en": "Dongguan",
+    "name_cn": "东莞",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "DDG"
+    ]
+  },
+  {
+    "code": "HKHKG",
+    "name_en": "Hong Kong",
+    "name_cn": "香港",
+    "country": "China",
+    "region": "East Asia",
+    "aliases": [
+      "HKG"
+    ]
+  },
+  {
+    "code": "TWKHH",
+    "name_en": "Kaohsiung",
+    "name_cn": "高雄",
+    "country": "Taiwan",
+    "region": "East Asia",
+    "aliases": [
+      "KHH"
+    ]
+  },
+  {
+    "code": "TWKEL",
+    "name_en": "Keelung",
+    "name_cn": "基隆",
+    "country": "Taiwan",
+    "region": "East Asia",
+    "aliases": [
+      "KEL"
+    ]
+  },
+  {
+    "code": "TWTXG",
+    "name_en": "Taichung",
+    "name_cn": "台中",
+    "country": "Taiwan",
+    "region": "East Asia",
+    "aliases": [
+      "TXG"
+    ]
+  },
+  {
+    "code": "JPYOK",
+    "name_en": "Yokohama",
+    "name_cn": "横滨",
+    "country": "Japan",
+    "region": "East Asia",
+    "aliases": [
+      "YOK"
+    ]
+  },
+  {
+    "code": "JPTYO",
+    "name_en": "Tokyo",
+    "name_cn": "东京",
+    "country": "Japan",
+    "region": "East Asia",
+    "aliases": [
+      "TYO"
+    ]
+  },
+  {
+    "code": "JPOSA",
+    "name_en": "Osaka",
+    "name_cn": "大阪",
+    "country": "Japan",
+    "region": "East Asia",
+    "aliases": [
+      "OSA"
+    ]
+  },
+  {
+    "code": "JPNGO",
+    "name_en": "Nagoya",
+    "name_cn": "名古屋",
+    "country": "Japan",
+    "region": "East Asia",
+    "aliases": [
+      "NGO"
+    ]
+  },
+  {
+    "code": "JPKOB",
+    "name_en": "Kobe",
+    "name_cn": "神户",
+    "country": "Japan",
+    "region": "East Asia",
+    "aliases": [
+      "KOB"
+    ]
+  },
+  {
+    "code": "JPMOJ",
+    "name_en": "Moji",
+    "name_cn": "门司",
+    "country": "Japan",
+    "region": "East Asia",
+    "aliases": [
+      "MOJ"
+    ]
+  },
+  {
+    "code": "KRPUS",
+    "name_en": "Busan",
+    "name_cn": "釜山",
+    "country": "South Korea",
+    "region": "East Asia",
+    "aliases": [
+      "PUS",
+      "BUSAN"
+    ]
+  },
+  {
+    "code": "KRINC",
+    "name_en": "Incheon",
+    "name_cn": "仁川",
+    "country": "South Korea",
+    "region": "East Asia",
+    "aliases": [
+      "INC"
+    ]
+  },
+  {
+    "code": "SGSIN",
+    "name_en": "Singapore",
+    "name_cn": "新加坡",
+    "country": "Singapore",
+    "region": "Southeast Asia",
+    "aliases": [
+      "SIN"
+    ]
+  },
+  {
+    "code": "MYPKG",
+    "name_en": "Port Klang",
+    "name_cn": "巴生港",
+    "country": "Malaysia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "PKG"
+    ]
+  },
+  {
+    "code": "MYPEN",
+    "name_en": "Penang",
+    "name_cn": "槟城",
+    "country": "Malaysia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "PEN"
+    ]
+  },
+  {
+    "code": "MYTPP",
+    "name_en": "Tanjung Pelepas",
+    "name_cn": "丹戎帕拉帕斯",
+    "country": "Malaysia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "TPP"
+    ]
+  },
+  {
+    "code": "THBKK",
+    "name_en": "Bangkok",
+    "name_cn": "曼谷",
+    "country": "Thailand",
+    "region": "Southeast Asia",
+    "aliases": [
+      "BKK"
+    ]
+  },
+  {
+    "code": "THLCH",
+    "name_en": "Laem Chabang",
+    "name_cn": "林查班",
+    "country": "Thailand",
+    "region": "Southeast Asia",
+    "aliases": [
+      "LCH"
+    ]
+  },
+  {
+    "code": "VNSGN",
+    "name_en": "Ho Chi Minh",
+    "name_cn": "胡志明市",
+    "country": "Vietnam",
+    "region": "Southeast Asia",
+    "aliases": [
+      "SGN"
+    ]
+  },
+  {
+    "code": "VNHPH",
+    "name_en": "Haiphong",
+    "name_cn": "海防",
+    "country": "Vietnam",
+    "region": "Southeast Asia",
+    "aliases": [
+      "HPH"
+    ]
+  },
+  {
+    "code": "VNDAD",
+    "name_en": "Da Nang",
+    "name_cn": "岘港",
+    "country": "Vietnam",
+    "region": "Southeast Asia",
+    "aliases": [
+      "DAD"
+    ]
+  },
+  {
+    "code": "IDJKT",
+    "name_en": "Jakarta",
+    "name_cn": "雅加达",
+    "country": "Indonesia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "JKT",
+      "TANJUNG PRIOK"
+    ]
+  },
+  {
+    "code": "IDSUB",
+    "name_en": "Surabaya",
+    "name_cn": "泗水",
+    "country": "Indonesia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "SUB"
+    ]
+  },
+  {
+    "code": "IDBLW",
+    "name_en": "Belawan",
+    "name_cn": "勿拉湾",
+    "country": "Indonesia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "BLW"
+    ]
+  },
+  {
+    "code": "IDSRG",
+    "name_en": "Semarang",
+    "name_cn": "三宝垄",
+    "country": "Indonesia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "SRG"
+    ]
+  },
+  {
+    "code": "PHMNL",
+    "name_en": "Manila",
+    "name_cn": "马尼拉",
+    "country": "Philippines",
+    "region": "Southeast Asia",
+    "aliases": [
+      "MNL"
+    ]
+  },
+  {
+    "code": "PHCEB",
+    "name_en": "Cebu",
+    "name_cn": "宿务",
+    "country": "Philippines",
+    "region": "Southeast Asia",
+    "aliases": [
+      "CEB"
+    ]
+  },
+  {
+    "code": "MMRGN",
+    "name_en": "Yangon",
+    "name_cn": "仰光",
+    "country": "Myanmar",
+    "region": "Southeast Asia",
+    "aliases": [
+      "RGN"
+    ]
+  },
+  {
+    "code": "KHPNH",
+    "name_en": "Phnom Penh",
+    "name_cn": "金边",
+    "country": "Cambodia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "PNH"
+    ]
+  },
+  {
+    "code": "KHKOS",
+    "name_en": "Sihanoukville",
+    "name_cn": "西哈努克",
+    "country": "Cambodia",
+    "region": "Southeast Asia",
+    "aliases": [
+      "KOS"
+    ]
+  },
+  {
+    "code": "INNSA",
+    "name_en": "Nhava Sheva",
+    "name_cn": "纳瓦谢瓦",
+    "country": "India",
+    "region": "South Asia",
+    "aliases": [
+      "NSA",
+      "JNPT",
+      "MUMBAI"
+    ]
+  },
+  {
+    "code": "INMUN",
+    "name_en": "Mundra",
+    "name_cn": "蒙德拉",
+    "country": "India",
+    "region": "South Asia",
+    "aliases": [
+      "MUN"
+    ]
+  },
+  {
+    "code": "INMAA",
+    "name_en": "Chennai",
+    "name_cn": "钦奈",
+    "country": "India",
+    "region": "South Asia",
+    "aliases": [
+      "MAA"
+    ]
+  },
+  {
+    "code": "INCCU",
+    "name_en": "Kolkata",
+    "name_cn": "加尔各答",
+    "country": "India",
+    "region": "South Asia",
+    "aliases": [
+      "CCU"
+    ]
+  },
+  {
+    "code": "INCOK",
+    "name_en": "Cochin",
+    "name_cn": "科钦",
+    "country": "India",
+    "region": "South Asia",
+    "aliases": [
+      "COK"
+    ]
+  },
+  {
+    "code": "INVIS",
+    "name_en": "Visakhapatnam",
+    "name_cn": "维沙卡帕特南",
+    "country": "India",
+    "region": "South Asia",
+    "aliases": [
+      "VIS"
+    ]
+  },
+  {
+    "code": "PKKAR",
+    "name_en": "Karachi",
+    "name_cn": "卡拉奇",
+    "country": "Pakistan",
+    "region": "South Asia",
+    "aliases": [
+      "KHI"
+    ]
+  },
+  {
+    "code": "PKQAS",
+    "name_en": "Qasim",
+    "name_cn": "卡西姆",
+    "country": "Pakistan",
+    "region": "South Asia",
+    "aliases": [
+      "QAS"
+    ]
+  },
+  {
+    "code": "BDCGP",
+    "name_en": "Chittagong",
+    "name_cn": "吉大港",
+    "country": "Bangladesh",
+    "region": "South Asia",
+    "aliases": [
+      "CGP"
+    ]
+  },
+  {
+    "code": "LKCMB",
+    "name_en": "Colombo",
+    "name_cn": "科伦坡",
+    "country": "Sri Lanka",
+    "region": "South Asia",
+    "aliases": [
+      "CMB"
+    ]
+  },
+  {
+    "code": "AEJEA",
+    "name_en": "Jebel Ali",
+    "name_cn": "杰贝阿里",
+    "country": "UAE",
+    "region": "Middle East",
+    "aliases": [
+      "JEA",
+      "DUBAI"
+    ]
+  },
+  {
+    "code": "AEDXB",
+    "name_en": "Dubai",
+    "name_cn": "迪拜",
+    "country": "UAE",
+    "region": "Middle East",
+    "aliases": [
+      "DXB"
+    ]
+  },
+  {
+    "code": "AEAUH",
+    "name_en": "Abu Dhabi",
+    "name_cn": "阿布扎比",
+    "country": "UAE",
+    "region": "Middle East",
+    "aliases": [
+      "AUH"
+    ]
+  },
+  {
+    "code": "AESHJ",
+    "name_en": "Sharjah",
+    "name_cn": "沙迦",
+    "country": "UAE",
+    "region": "Middle East",
+    "aliases": [
+      "SHJ"
+    ]
+  },
+  {
+    "code": "OMSLL",
+    "name_en": "Salalah",
+    "name_cn": "萨拉拉",
+    "country": "Oman",
+    "region": "Middle East",
+    "aliases": [
+      "SLL"
+    ]
+  },
+  {
+    "code": "SAKAC",
+    "name_en": "King Abdullah City",
+    "name_cn": "阿卜杜拉国王港",
+    "country": "Saudi Arabia",
+    "region": "Middle East",
+    "aliases": [
+      "KAC"
+    ]
+  },
+  {
+    "code": "SAJED",
+    "name_en": "Jeddah",
+    "name_cn": "吉达",
+    "country": "Saudi Arabia",
+    "region": "Middle East",
+    "aliases": [
+      "JED"
+    ]
+  },
+  {
+    "code": "SADMM",
+    "name_en": "Dammam",
+    "name_cn": "达曼",
+    "country": "Saudi Arabia",
+    "region": "Middle East",
+    "aliases": [
+      "DMM"
+    ]
+  },
+  {
+    "code": "BHDOH",
+    "name_en": "Bahrain",
+    "name_cn": "巴林",
+    "country": "Bahrain",
+    "region": "Middle East",
+    "aliases": [
+      "BAH"
+    ]
+  },
+  {
+    "code": "KWKWI",
+    "name_en": "Kuwait",
+    "name_cn": "科威特",
+    "country": "Kuwait",
+    "region": "Middle East",
+    "aliases": [
+      "KWI"
+    ]
+  },
+  {
+    "code": "IQBSR",
+    "name_en": "Basra",
+    "name_cn": "巴士拉",
+    "country": "Iraq",
+    "region": "Middle East",
+    "aliases": [
+      "BSR",
+      "UMM QASR"
+    ]
+  },
+  {
+    "code": "JOAQJ",
+    "name_en": "Aqaba",
+    "name_cn": "亚喀巴",
+    "country": "Jordan",
+    "region": "Middle East",
+    "aliases": [
+      "AQJ"
+    ]
+  },
+  {
+    "code": "IRBND",
+    "name_en": "Bandar Abbas",
+    "name_cn": "阿巴斯港",
+    "country": "Iran",
+    "region": "Middle East",
+    "aliases": [
+      "BND"
+    ]
+  },
+  {
+    "code": "TRIST",
+    "name_en": "Istanbul",
+    "name_cn": "伊斯坦布尔",
+    "country": "Turkey",
+    "region": "Middle East",
+    "aliases": [
+      "IST",
+      "AMBARLI"
+    ]
+  },
+  {
+    "code": "TRMER",
+    "name_en": "Mersin",
+    "name_cn": "梅尔辛",
+    "country": "Turkey",
+    "region": "Middle East",
+    "aliases": [
+      "MER"
+    ]
+  },
+  {
+    "code": "TRIZO",
+    "name_en": "Izmir",
+    "name_cn": "伊兹密尔",
+    "country": "Turkey",
+    "region": "Middle East",
+    "aliases": [
+      "IZM"
+    ]
+  },
+  {
+    "code": "ILHFA",
+    "name_en": "Haifa",
+    "name_cn": "海法",
+    "country": "Israel",
+    "region": "Middle East",
+    "aliases": [
+      "HFA"
+    ]
+  },
+  {
+    "code": "EGPSD",
+    "name_en": "Port Said",
+    "name_cn": "塞得港",
+    "country": "Egypt",
+    "region": "Middle East",
+    "aliases": [
+      "PSD"
+    ]
+  },
+  {
+    "code": "NLRTM",
+    "name_en": "Rotterdam",
+    "name_cn": "鹿特丹",
+    "country": "Netherlands",
+    "region": "Europe",
+    "aliases": [
+      "RTM"
+    ]
+  },
+  {
+    "code": "DEHAM",
+    "name_en": "Hamburg",
+    "name_cn": "汉堡",
+    "country": "Germany",
+    "region": "Europe",
+    "aliases": [
+      "HAM"
+    ]
+  },
+  {
+    "code": "BEANR",
+    "name_en": "Antwerp",
+    "name_cn": "安特卫普",
+    "country": "Belgium",
+    "region": "Europe",
+    "aliases": [
+      "ANR"
+    ]
+  },
+  {
+    "code": "DEBRV",
+    "name_en": "Bremerhaven",
+    "name_cn": "不来梅",
+    "country": "Germany",
+    "region": "Europe",
+    "aliases": [
+      "BRV"
+    ]
+  },
+  {
+    "code": "GBFXT",
+    "name_en": "Felixstowe",
+    "name_cn": "费利克斯托",
+    "country": "UK",
+    "region": "Europe",
+    "aliases": [
+      "FXT"
+    ]
+  },
+  {
+    "code": "GBLGP",
+    "name_en": "London Gateway",
+    "name_cn": "伦敦门户港",
+    "country": "UK",
+    "region": "Europe",
+    "aliases": [
+      "LGP"
+    ]
+  },
+  {
+    "code": "GBSOU",
+    "name_en": "Southampton",
+    "name_cn": "南安普顿",
+    "country": "UK",
+    "region": "Europe",
+    "aliases": [
+      "SOU"
+    ]
+  },
+  {
+    "code": "FRLEH",
+    "name_en": "Le Havre",
+    "name_cn": "勒阿弗尔",
+    "country": "France",
+    "region": "Europe",
+    "aliases": [
+      "LEH"
+    ]
+  },
+  {
+    "code": "FRFOS",
+    "name_en": "Fos-sur-Mer",
+    "name_cn": "福斯",
+    "country": "France",
+    "region": "Europe",
+    "aliases": [
+      "FOS",
+      "MARSEILLE"
+    ]
+  },
+  {
+    "code": "ESBCN",
+    "name_en": "Barcelona",
+    "name_cn": "巴塞罗那",
+    "country": "Spain",
+    "region": "Europe",
+    "aliases": [
+      "BCN"
+    ]
+  },
+  {
+    "code": "ESALG",
+    "name_en": "Algeciras",
+    "name_cn": "阿尔赫西拉斯",
+    "country": "Spain",
+    "region": "Europe",
+    "aliases": [
+      "ALG"
+    ]
+  },
+  {
+    "code": "ESVLC",
+    "name_en": "Valencia",
+    "name_cn": "瓦伦西亚",
+    "country": "Spain",
+    "region": "Europe",
+    "aliases": [
+      "VLC"
+    ]
+  },
+  {
+    "code": "ITGOA",
+    "name_en": "Genoa",
+    "name_cn": "热那亚",
+    "country": "Italy",
+    "region": "Europe",
+    "aliases": [
+      "GOA"
+    ]
+  },
+  {
+    "code": "ITLIV",
+    "name_en": "Livorno",
+    "name_cn": "里窝那",
+    "country": "Italy",
+    "region": "Europe",
+    "aliases": [
+      "LIV"
+    ]
+  },
+  {
+    "code": "ITNAP",
+    "name_en": "Naples",
+    "name_cn": "那不勒斯",
+    "country": "Italy",
+    "region": "Europe",
+    "aliases": [
+      "NAP"
+    ]
+  },
+  {
+    "code": "ITGIT",
+    "name_en": "Gioia Tauro",
+    "name_cn": "焦亚陶罗",
+    "country": "Italy",
+    "region": "Europe",
+    "aliases": [
+      "GIT"
+    ]
+  },
+  {
+    "code": "GRPIR",
+    "name_en": "Piraeus",
+    "name_cn": "比雷埃夫斯",
+    "country": "Greece",
+    "region": "Europe",
+    "aliases": [
+      "PIR"
+    ]
+  },
+  {
+    "code": "GRTHE",
+    "name_en": "Thessaloniki",
+    "name_cn": "塞萨洛尼基",
+    "country": "Greece",
+    "region": "Europe",
+    "aliases": [
+      "SKG"
+    ]
+  },
+  {
+    "code": "PTLIS",
+    "name_en": "Lisbon",
+    "name_cn": "里斯本",
+    "country": "Portugal",
+    "region": "Europe",
+    "aliases": [
+      "LIS"
+    ]
+  },
+  {
+    "code": "PTSIE",
+    "name_en": "Sines",
+    "name_cn": "锡尼什",
+    "country": "Portugal",
+    "region": "Europe",
+    "aliases": [
+      "SIE"
+    ]
+  },
+  {
+    "code": "PLGDY",
+    "name_en": "Gdynia",
+    "name_cn": "格丁尼亚",
+    "country": "Poland",
+    "region": "Europe",
+    "aliases": [
+      "GDY"
+    ]
+  },
+  {
+    "code": "PLGDN",
+    "name_en": "Gdansk",
+    "name_cn": "格但斯克",
+    "country": "Poland",
+    "region": "Europe",
+    "aliases": [
+      "GDN"
+    ]
+  },
+  {
+    "code": "SEGOT",
+    "name_en": "Gothenburg",
+    "name_cn": "哥德堡",
+    "country": "Sweden",
+    "region": "Europe",
+    "aliases": [
+      "GOT"
+    ]
+  },
+  {
+    "code": "RULED",
+    "name_en": "St Petersburg",
+    "name_cn": "圣彼得堡",
+    "country": "Russia",
+    "region": "Europe",
+    "aliases": [
+      "LED"
+    ]
+  },
+  {
+    "code": "RUVVO",
+    "name_en": "Vladivostok",
+    "name_cn": "海参崴",
+    "country": "Russia",
+    "region": "East Asia",
+    "aliases": [
+      "VVO"
+    ]
+  },
+  {
+    "code": "RUNVS",
+    "name_en": "Novorossiysk",
+    "name_cn": "新罗西斯克",
+    "country": "Russia",
+    "region": "Europe",
+    "aliases": [
+      "NVS"
+    ]
+  },
+  {
+    "code": "MAPTM",
+    "name_en": "Tangier Med",
+    "name_cn": "丹吉尔",
+    "country": "Morocco",
+    "region": "Africa",
+    "aliases": [
+      "PTM"
+    ]
+  },
+  {
+    "code": "ZADUR",
+    "name_en": "Durban",
+    "name_cn": "德班",
+    "country": "South Africa",
+    "region": "Africa",
+    "aliases": [
+      "DUR"
+    ]
+  },
+  {
+    "code": "ZACPT",
+    "name_en": "Cape Town",
+    "name_cn": "开普敦",
+    "country": "South Africa",
+    "region": "Africa",
+    "aliases": [
+      "CPT"
+    ]
+  },
+  {
+    "code": "TZDAR",
+    "name_en": "Dar es Salaam",
+    "name_cn": "达累斯萨拉姆",
+    "country": "Tanzania",
+    "region": "Africa",
+    "aliases": [
+      "DAR"
+    ]
+  },
+  {
+    "code": "KEMLB",
+    "name_en": "Mombasa",
+    "name_cn": "蒙巴萨",
+    "country": "Kenya",
+    "region": "Africa",
+    "aliases": [
+      "MLB"
+    ]
+  },
+  {
+    "code": "NGAPP",
+    "name_en": "Apapa",
+    "name_cn": "阿帕帕",
+    "country": "Nigeria",
+    "region": "Africa",
+    "aliases": [
+      "APP",
+      "LAGOS"
+    ]
+  },
+  {
+    "code": "NGTIN",
+    "name_en": "Tin Can Island",
+    "name_cn": "锡罐岛",
+    "country": "Nigeria",
+    "region": "Africa",
+    "aliases": [
+      "TIN"
+    ]
+  },
+  {
+    "code": "GHTEM",
+    "name_en": "Tema",
+    "name_cn": "特马",
+    "country": "Ghana",
+    "region": "Africa",
+    "aliases": [
+      "TEM"
+    ]
+  },
+  {
+    "code": "DJJIB",
+    "name_en": "Djibouti",
+    "name_cn": "吉布提",
+    "country": "Djibouti",
+    "region": "Africa",
+    "aliases": [
+      "JIB"
+    ]
+  },
+  {
+    "code": "MZMPN",
+    "name_en": "Maputo",
+    "name_cn": "马普托",
+    "country": "Mozambique",
+    "region": "Africa",
+    "aliases": [
+      "MPM"
+    ]
+  },
+  {
+    "code": "SNDAR",
+    "name_en": "Dakar",
+    "name_cn": "达喀尔",
+    "country": "Senegal",
+    "region": "Africa",
+    "aliases": [
+      "DKR"
+    ]
+  },
+  {
+    "code": "CIABJ",
+    "name_en": "Abidjan",
+    "name_cn": "阿比让",
+    "country": "Ivory Coast",
+    "region": "Africa",
+    "aliases": [
+      "ABJ"
+    ]
+  },
+  {
+    "code": "EGALY",
+    "name_en": "Alexandria",
+    "name_cn": "亚历山大",
+    "country": "Egypt",
+    "region": "Africa",
+    "aliases": [
+      "ALY"
+    ]
+  },
+  {
+    "code": "USLAX",
+    "name_en": "Los Angeles",
+    "name_cn": "洛杉矶",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "LAX"
+    ]
+  },
+  {
+    "code": "USLGB",
+    "name_en": "Long Beach",
+    "name_cn": "长滩",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "LGB"
+    ]
+  },
+  {
+    "code": "USNYC",
+    "name_en": "New York",
+    "name_cn": "纽约",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "NYC",
+      "NEWARK"
+    ]
+  },
+  {
+    "code": "USSAV",
+    "name_en": "Savannah",
+    "name_cn": "萨凡纳",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "SAV"
+    ]
+  },
+  {
+    "code": "USHOU",
+    "name_en": "Houston",
+    "name_cn": "休斯顿",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "HOU"
+    ]
+  },
+  {
+    "code": "USSEA",
+    "name_en": "Seattle",
+    "name_cn": "西雅图",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "SEA",
+      "TACOMA"
+    ]
+  },
+  {
+    "code": "USOAK",
+    "name_en": "Oakland",
+    "name_cn": "奥克兰",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "OAK"
+    ]
+  },
+  {
+    "code": "USCHS",
+    "name_en": "Charleston",
+    "name_cn": "查尔斯顿",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "CHS"
+    ]
+  },
+  {
+    "code": "USNOR",
+    "name_en": "Norfolk",
+    "name_cn": "诺福克",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "NOR"
+    ]
+  },
+  {
+    "code": "USMIA",
+    "name_en": "Miami",
+    "name_cn": "迈阿密",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "MIA"
+    ]
+  },
+  {
+    "code": "USBAL",
+    "name_en": "Baltimore",
+    "name_cn": "巴尔的摩",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "BAL"
+    ]
+  },
+  {
+    "code": "USMOB",
+    "name_en": "Mobile",
+    "name_cn": "莫比尔",
+    "country": "USA",
+    "region": "North America",
+    "aliases": [
+      "MOB"
+    ]
+  },
+  {
+    "code": "CAMTR",
+    "name_en": "Montreal",
+    "name_cn": "蒙特利尔",
+    "country": "Canada",
+    "region": "North America",
+    "aliases": [
+      "MTR"
+    ]
+  },
+  {
+    "code": "CAVAN",
+    "name_en": "Vancouver",
+    "name_cn": "温哥华",
+    "country": "Canada",
+    "region": "North America",
+    "aliases": [
+      "VAN"
+    ]
+  },
+  {
+    "code": "CATOR",
+    "name_en": "Toronto",
+    "name_cn": "多伦多",
+    "country": "Canada",
+    "region": "North America",
+    "aliases": [
+      "TOR"
+    ]
+  },
+  {
+    "code": "CAHAL",
+    "name_en": "Halifax",
+    "name_cn": "哈利法克斯",
+    "country": "Canada",
+    "region": "North America",
+    "aliases": [
+      "HAL"
+    ]
+  },
+  {
+    "code": "CAPRI",
+    "name_en": "Prince Rupert",
+    "name_cn": "鲁伯特王子港",
+    "country": "Canada",
+    "region": "North America",
+    "aliases": [
+      "PRI"
+    ]
+  },
+  {
+    "code": "MXZLO",
+    "name_en": "Manzanillo",
+    "name_cn": "曼萨尼约",
+    "country": "Mexico",
+    "region": "North America",
+    "aliases": [
+      "ZLO"
+    ]
+  },
+  {
+    "code": "MXLZC",
+    "name_en": "Lazaro Cardenas",
+    "name_cn": "拉萨罗卡德纳斯",
+    "country": "Mexico",
+    "region": "North America",
+    "aliases": [
+      "LZC"
+    ]
+  },
+  {
+    "code": "MXVER",
+    "name_en": "Veracruz",
+    "name_cn": "韦拉克鲁斯",
+    "country": "Mexico",
+    "region": "North America",
+    "aliases": [
+      "VER"
+    ]
+  },
+  {
+    "code": "PAMIT",
+    "name_en": "Manzanillo",
+    "name_cn": "曼萨尼约(巴拿马)",
+    "country": "Panama",
+    "region": "Central America",
+    "aliases": [
+      "MIT"
+    ]
+  },
+  {
+    "code": "PABLB",
+    "name_en": "Balboa",
+    "name_cn": "巴尔博亚",
+    "country": "Panama",
+    "region": "Central America",
+    "aliases": [
+      "BLB"
+    ]
+  },
+  {
+    "code": "PAONX",
+    "name_en": "Colon",
+    "name_cn": "科隆",
+    "country": "Panama",
+    "region": "Central America",
+    "aliases": [
+      "ONX"
+    ]
+  },
+  {
+    "code": "JMKIN",
+    "name_en": "Kingston",
+    "name_cn": "金斯顿",
+    "country": "Jamaica",
+    "region": "Caribbean",
+    "aliases": [
+      "KIN"
+    ]
+  },
+  {
+    "code": "DOCAU",
+    "name_en": "Caucedo",
+    "name_cn": "考塞多",
+    "country": "Dominican Republic",
+    "region": "Caribbean",
+    "aliases": [
+      "CAU"
+    ]
+  },
+  {
+    "code": "BRSSZ",
+    "name_en": "Santos",
+    "name_cn": "桑托斯",
+    "country": "Brazil",
+    "region": "South America",
+    "aliases": [
+      "SSZ"
+    ]
+  },
+  {
+    "code": "BRSUA",
+    "name_en": "Suape",
+    "name_cn": "苏阿佩",
+    "country": "Brazil",
+    "region": "South America",
+    "aliases": [
+      "SUA"
+    ]
+  },
+  {
+    "code": "BRPNG",
+    "name_en": "Paranagua",
+    "name_cn": "巴拉那瓜",
+    "country": "Brazil",
+    "region": "South America",
+    "aliases": [
+      "PNG"
+    ]
+  },
+  {
+    "code": "BRRIG",
+    "name_en": "Rio Grande",
+    "name_cn": "里奥格兰德",
+    "country": "Brazil",
+    "region": "South America",
+    "aliases": [
+      "RIG"
+    ]
+  },
+  {
+    "code": "BRITJ",
+    "name_en": "Itajai",
+    "name_cn": "伊塔雅伊",
+    "country": "Brazil",
+    "region": "South America",
+    "aliases": [
+      "ITJ",
+      "NAVEGANTES"
+    ]
+  },
+  {
+    "code": "BRRIO",
+    "name_en": "Rio de Janeiro",
+    "name_cn": "里约热内卢",
+    "country": "Brazil",
+    "region": "South America",
+    "aliases": [
+      "RIO"
+    ]
+  },
+  {
+    "code": "ARBUE",
+    "name_en": "Buenos Aires",
+    "name_cn": "布宜诺斯艾利斯",
+    "country": "Argentina",
+    "region": "South America",
+    "aliases": [
+      "BUE"
+    ]
+  },
+  {
+    "code": "CLSAI",
+    "name_en": "San Antonio",
+    "name_cn": "圣安东尼奥",
+    "country": "Chile",
+    "region": "South America",
+    "aliases": [
+      "SAI"
+    ]
+  },
+  {
+    "code": "CLVAP",
+    "name_en": "Valparaiso",
+    "name_cn": "瓦尔帕莱索",
+    "country": "Chile",
+    "region": "South America",
+    "aliases": [
+      "VAP"
+    ]
+  },
+  {
+    "code": "PECLL",
+    "name_en": "Callao",
+    "name_cn": "卡亚俄",
+    "country": "Peru",
+    "region": "South America",
+    "aliases": [
+      "CLL",
+      "LIMA"
+    ]
+  },
+  {
+    "code": "COBUN",
+    "name_en": "Buenaventura",
+    "name_cn": "布埃纳文图拉",
+    "country": "Colombia",
+    "region": "South America",
+    "aliases": [
+      "BUN"
+    ]
+  },
+  {
+    "code": "COCTG",
+    "name_en": "Cartagena",
+    "name_cn": "卡塔赫纳",
+    "country": "Colombia",
+    "region": "South America",
+    "aliases": [
+      "CTG"
+    ]
+  },
+  {
+    "code": "ECGYE",
+    "name_en": "Guayaquil",
+    "name_cn": "瓜亚基尔",
+    "country": "Ecuador",
+    "region": "South America",
+    "aliases": [
+      "GYE"
+    ]
+  },
+  {
+    "code": "UYMVD",
+    "name_en": "Montevideo",
+    "name_cn": "蒙得维的亚",
+    "country": "Uruguay",
+    "region": "South America",
+    "aliases": [
+      "MVD"
+    ]
+  },
+  {
+    "code": "AUMEL",
+    "name_en": "Melbourne",
+    "name_cn": "墨尔本",
+    "country": "Australia",
+    "region": "Oceania",
+    "aliases": [
+      "MEL"
+    ]
+  },
+  {
+    "code": "AUSYD",
+    "name_en": "Sydney",
+    "name_cn": "悉尼",
+    "country": "Australia",
+    "region": "Oceania",
+    "aliases": [
+      "SYD"
+    ]
+  },
+  {
+    "code": "AUBNE",
+    "name_en": "Brisbane",
+    "name_cn": "布里斯班",
+    "country": "Australia",
+    "region": "Oceania",
+    "aliases": [
+      "BNE"
+    ]
+  },
+  {
+    "code": "AUFRE",
+    "name_en": "Fremantle",
+    "name_cn": "弗里曼特尔",
+    "country": "Australia",
+    "region": "Oceania",
+    "aliases": [
+      "FRE",
+      "PERTH"
+    ]
+  },
+  {
+    "code": "AUADL",
+    "name_en": "Adelaide",
+    "name_cn": "阿德莱德",
+    "country": "Australia",
+    "region": "Oceania",
+    "aliases": [
+      "ADL"
+    ]
+  },
+  {
+    "code": "NZAKL",
+    "name_en": "Auckland",
+    "name_cn": "奥克兰",
+    "country": "New Zealand",
+    "region": "Oceania",
+    "aliases": [
+      "AKL"
+    ]
+  },
+  {
+    "code": "NZTRG",
+    "name_en": "Tauranga",
+    "name_cn": "陶朗加",
+    "country": "New Zealand",
+    "region": "Oceania",
+    "aliases": [
+      "TRG"
+    ]
+  },
+  {
+    "code": "NZLYT",
+    "name_en": "Lyttelton",
+    "name_cn": "利特尔顿",
+    "country": "New Zealand",
+    "region": "Oceania",
+    "aliases": [
+      "LYT"
+    ]
+  },
+  {
+    "code": "FJSUV",
+    "name_en": "Suva",
+    "name_cn": "苏瓦",
+    "country": "Fiji",
+    "region": "Oceania",
+    "aliases": [
+      "SUV"
+    ]
+  },
+  {
+    "code": "PGPOM",
+    "name_en": "Port Moresby",
+    "name_cn": "莫尔兹比港",
+    "country": "Papua New Guinea",
+    "region": "Oceania",
+    "aliases": [
+      "POM"
+    ]
+  }
+]
