@@ -1,0 +1,59 @@
+# ============================================================
+# FFORS Docker Compose — 本地开发 & NAS 部署
+# 适配绿联 DXP4800 Plus (Intel x86_64, UGOS Pro)
+# ============================================================
+
+services:
+  # --- PostgreSQL 数据库 ---
+  ffors-db:
+    image: postgres:16-alpine
+    container_name: ffors-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ffors
+      POSTGRES_USER: ffors_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ffors_dev_2024}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ffors_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ffors_user -d ffors"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- FFORS API 服务 ---
+  ffors-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ffors-api
+    restart: unless-stopped
+    depends_on:
+      ffors-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://ffors_user:${DB_PASSWORD:-ffors_dev_2024}@ffors-db:5432/ffors
+      DATA_DIR: /app/data
+      LOG_DIR: /app/logs
+      # AI & 通知 (Phase 2 填充)
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
+      MINIMAX_BASE_URL: ${MINIMAX_BASE_URL:-https://api.minimaxi.com/v1}
+      MINIMAX_GROUP_ID: ${MINIMAX_GROUP_ID:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      WECOM_WEBHOOK_KEY: ${WECOM_WEBHOOK_KEY:-}
+      # 代理配置
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      HTTPS_PROXY: ${HTTPS_PROXY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ffors_logs:/app/logs
+
+volumes:
+  ffors_pgdata:
+    driver: local
+  ffors_logs:
+    driver: local
