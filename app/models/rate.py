@@ -64,9 +64,11 @@ class OceanRate(Base):
     valid_from = Column(Date, nullable=True, comment="报价生效日")
     valid_to = Column(Date, nullable=True, comment="报价失效日")
 
-    # --- 量化预留字段 (Phase 1 后半段填充) ---
-    wow_change = Column(Float, nullable=True, comment="环比变化率 (%)")
-    mom_change = Column(Float, nullable=True, comment="月同比变化率 (%)")
+    # --- 量化分析字段 ---
+    wow_20gp = Column(Float, nullable=True, comment="20GP 环比变化率 (%)")
+    mom_20gp = Column(Float, nullable=True, comment="20GP 月同比变化率 (%)")
+    wow_40gp = Column(Float, nullable=True, comment="40GP 环比变化率 (%)")
+    mom_40gp = Column(Float, nullable=True, comment="40GP 月同比变化率 (%)")
 
     # --- 智能预留字段 (Phase 2 填充) ---
     risk_score = Column(Float, nullable=True, comment="风险评分 (0-100)")

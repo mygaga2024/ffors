@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.port import Port
 from app.models.rate import OceanRate
 from app.schemas.rate import RateBatchImportResult, ImportError as ImportErrorSchema
+from app.services.analytics import calculate_price_changes
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.services.ingestion")
@@ -188,6 +189,7 @@ async def batch_import_rates(
 ) -> RateBatchImportResult:
     """
     将 DataFrame 中的报价数据批量写入数据库。
+    流程：解析行 → 构造 ORM → 计算 WoW/MoM → 提交入库。
     单条失败不中断整体任务（遵循 DEVELOPMENT_PROTOCOL.md §6）。
     """
     port_lookup = await _build_port_lookup(db)
@@ -195,6 +197,7 @@ async def batch_import_rates(
     total = len(df)
     success = 0
     errors: list[ImportErrorSchema] = []
+    new_rates: list[OceanRate] = []
 
     for idx, row in df.iterrows():
         row_num = int(idx) + 2  # Excel 行号（第 1 行是表头）
@@ -244,6 +247,7 @@ async def batch_import_rates(
             )
 
             db.add(rate)
+            new_rates.append(rate)
             success += 1
 
         except Exception as e:
@@ -252,6 +256,13 @@ async def batch_import_rates(
                 row=row_num,
                 reason=str(e),
             ))
+
+    # --- 计算 WoW / MoM 价格波动 ---
+    if new_rates:
+        try:
+            await calculate_price_changes(db, new_rates)
+        except Exception as e:
+            logger.warning(f"价格波动计算异常（不影响导入）: {e}")
 
     # 统一提交（所有成功行一次性入库）
     if success > 0:
@@ -276,3 +287,4 @@ async def batch_import_rates(
         errors=errors,
         source_file=source_file,
     )
+

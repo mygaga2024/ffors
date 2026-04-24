@@ -63,8 +63,10 @@ class RateResponse(RateBase):
     """返回给客户端的报价数据结构。"""
 
     id: int
-    wow_change: Optional[float] = Field(None, description="环比变化率 (%)")
-    mom_change: Optional[float] = Field(None, description="月同比变化率 (%)")
+    wow_20gp: Optional[float] = Field(None, description="20GP 环比变化率 (%)")
+    mom_20gp: Optional[float] = Field(None, description="20GP 月同比变化率 (%)")
+    wow_40gp: Optional[float] = Field(None, description="40GP 环比变化率 (%)")
+    mom_40gp: Optional[float] = Field(None, description="40GP 月同比变化率 (%)")
     source_file: Optional[str] = Field(None, description="来源文件名")
     created_at: datetime
     updated_at: Optional[datetime] = None
