@@ -156,3 +156,57 @@ async def import_rates_from_excel(
         f"{result.failed} 失败, 文件={file.filename}"
     )
     return result
+
+
+# ─────────────────────────────────────────────
+# POST /api/v1/rates/import/pdf — PDF 智能解析导入
+# ─────────────────────────────────────────────
+
+@router.post(
+    "/import/pdf",
+    response_model=RateBatchImportResult,
+    status_code=status.HTTP_200_OK,
+    summary="PDF 智能解析并导入报价",
+    description="利用 MiniMax 大模型提取 PDF 报价单，并复用 Excel 导入逻辑入库。",
+)
+async def import_rates_from_pdf(
+    file: UploadFile = File(..., description="PDF 报价单文件 (.pdf)"),
+    db: AsyncSession = Depends(get_db),
+) -> RateBatchImportResult:
+
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="仅支持 .pdf 格式的文件",
+        )
+
+    logger.info(f"收到 PDF 解析请求: 文件名={file.filename}")
+
+    try:
+        file_bytes = await file.read()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"文件读取失败: {e}",
+        )
+
+    # 调用 PDF 智能解析器 (转换为 DataFrame)
+    from app.services.pdf_parser import parse_pdf_to_dataframe
+    try:
+        df = await parse_pdf_to_dataframe(file_bytes)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        logger.error(f"PDF AI 解析异常: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF 智能解析失败: {e}",
+        )
+
+    # 复用批处理入库逻辑 (自动触发港口映射、WoW/MoM计算和告警)
+    result = await batch_import_rates(df, source_file=file.filename, db=db)
+    logger.info(
+        f"PDF 导入完成: {result.success}/{result.total} 成功, "
+        f"{result.failed} 失败, 文件={file.filename}"
+    )
+    return result
