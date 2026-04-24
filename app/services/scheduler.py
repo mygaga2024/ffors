@@ -12,23 +12,12 @@ from app.models.base import get_async_session
 from app.models.rate import OceanRate
 from app.services.notification import send_wecom_report
 from app.services.rss_fetcher import fetch_and_store_news
-from app.services.rag import ingest_news_to_vector_db
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.services.scheduler")
 
 # 单例调度器实例
 _scheduler: AsyncIOScheduler | None = None
-
-
-async def run_news_pipeline():
-    """
-    新闻流水线：先抓取 RSS 入库，然后触发 RAG 向量化同步。
-    """
-    logger.info("开始执行新闻流全链路流水线 (抓取 -> 向量化)...")
-    await fetch_and_store_news()
-    await ingest_news_to_vector_db()
-    logger.info("新闻流全链路流水线执行完毕。")
 
 
 async def generate_morning_report():
@@ -106,12 +95,23 @@ def start_scheduler():
             replace_existing=True,
         )
 
-        # 每 4 小时抓取一次 RSS 航运新闻并同步至向量库
+        # 每 4 小时抓取一次 RSS 航运新闻
         _scheduler.add_job(
-            run_news_pipeline,
+            fetch_and_store_news,
             "interval",
             hours=4,
-            id="rss_rag_pipeline",
+            id="rss_fetcher",
+            replace_existing=True,
+        )
+
+        # 每天定时将新新闻灌注至 ChromaDB 向量库 (RAG)
+        from app.services.rag import ingest_news_to_vector_db
+        _scheduler.add_job(
+            ingest_news_to_vector_db,
+            "interval",
+            hours=4,
+            minutes=10,  # 错开 10 分钟，确保在 rss_fetcher 之后运行
+            id="rag_ingestion",
             replace_existing=True,
         )
         
