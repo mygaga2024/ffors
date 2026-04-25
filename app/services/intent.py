@@ -84,7 +84,7 @@ async def _call_minimax(prompt: str) -> Optional[str]:
         "temperature": 0.1,
     }
 
-    proxies = settings.http_proxy or None
+    proxies = settings.https_proxy or settings.http_proxy or None
     async with httpx.AsyncClient(proxy=proxies, timeout=15.0) as client:
         response = await client.post(url, headers=headers, json=payload)
         response.raise_for_status()
@@ -119,7 +119,7 @@ async def _call_gemini(prompt: str) -> Optional[str]:
         },
     }
 
-    proxies = settings.http_proxy or None
+    proxies = settings.https_proxy or settings.http_proxy or None
     async with httpx.AsyncClient(proxy=proxies, timeout=15.0) as client:
         response = await client.post(url, json=payload)
         response.raise_for_status()
