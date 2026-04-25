@@ -101,6 +101,44 @@ async def get_rate(
 
 
 # ─────────────────────────────────────────────
+# GET /api/v1/rates/radar/recommendations — 比价雷达
+# ─────────────────────────────────────────────
+
+@router.get(
+    "/radar/recommendations",
+    summary="比价雷达 (智能推优与风险排查)",
+    description="给定航线与箱型，拉取数据库报价并进行性价比智能打分，同时交叉验证航线风险。",
+)
+async def get_radar_recommendations(
+    pol_code: str = Query(..., min_length=2, max_length=50, description="起运港代码"),
+    pod_code: str = Query(..., min_length=2, max_length=50, description="目的港代码"),
+    container_type: str = Query("40HQ", description="箱型: 20GP/40GP/40HQ"),
+    db: AsyncSession = Depends(get_db),
+):
+    pol_code = pol_code.strip().upper()
+    pod_code = pod_code.strip().upper()
+    container_type = container_type.strip().upper()
+    
+    if container_type not in ["20GP", "40GP", "40HQ"]:
+        raise HTTPException(status_code=400, detail="不支持的箱型，请选择 20GP/40GP/40HQ")
+        
+    stmt = (
+        select(OceanRate)
+        .where(
+            and_(
+                OceanRate.pol_code == pol_code,
+                OceanRate.pod_code == pod_code
+            )
+        )
+    )
+    result = await db.execute(stmt)
+    rates = result.scalars().all()
+    
+    from app.services.radar import get_route_recommendations
+    return await get_route_recommendations(list(rates), container_type, pol_code, pod_code)
+
+
+# ─────────────────────────────────────────────
 # POST /api/v1/rates/import/excel — Excel 批量导入
 # ─────────────────────────────────────────────
 

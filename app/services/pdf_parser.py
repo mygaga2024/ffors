@@ -67,6 +67,7 @@ def _build_prompt(page_text: str) -> str:
     - "price_40gp": 40GP 价格（数字，没有则返回 null）
     - "price_40hq": 40HQ 价格（数字，没有则返回 null）
     - "currency": 币种（默认为 "USD"）
+    - "tt_days": 航程时效天数（整数，如 15、30。极其重要！没有则返回 null）
     - "remarks": 附加费或备注信息（字符串，没有则返回 ""）
 
 如果该页没有任何报价数据，请返回一个空数组 `[]`。
