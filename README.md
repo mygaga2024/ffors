@@ -61,6 +61,9 @@ open http://localhost:8000/docs
 | `GET` | `/api/v1/rates/` | 查询报价列表（支持多维过滤） |
 | `GET` | `/api/v1/rates/{id}` | 查询单条报价详情 |
 | `POST` | `/api/v1/rates/import/excel` | Excel 批量导入报价 |
+| `POST` | `/api/v1/rates/import/pdf` | PDF 智能解析导入（MiniMax AI） |
+| `GET` | `/api/v1/rates/radar/recommendations` | 比价雷达（智能推优与风险排查） |
+| `POST` | `/api/v1/bot/dingtalk/receive` | 钉钉机器人交互回调 |
 | `GET` | `/docs` | Swagger API 文档 |
 | `GET` | `/redoc` | ReDoc API 文档 |
 

@@ -6,7 +6,6 @@ FFORS 机器人交互接口 (Bot Webhooks)
 import base64
 import hashlib
 import hmac
-import time
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
