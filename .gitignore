@@ -8,6 +8,10 @@
 .env.*
 !.env.example
 
+# --- 内部协议文档 (仅本地存储，严禁同步至远程) ---
+DEVELOPMENT_PROTOCOL.md
+MULTI_AGENT_PROTOCOL.md
+
 # --- 真实业务数据目录 ---
 /data/*
 !/data/seed_ports.json
@@ -31,6 +35,7 @@ build/
 venv/
 .venv/
 env/
+venv_*/
 
 # --- 测试缓存 ---
 .pytest_cache/

@@ -4,6 +4,7 @@ FFORS 全局配置模块
 严禁硬编码任何凭据 (DEVELOPMENT_PROTOCOL.md §2)。
 """
 
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

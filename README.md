@@ -8,13 +8,12 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://docs.docker.com/compose/)
 
 ## 系统简介
-
 FFORS 是一套面向国际货代的海运报价管理平台，提供：
 
-- 📊 **报价数据管理** — Excel 批量导入、多维查询、航线报价追踪
-- 📈 **量化分析** — 环比 (WoW) / 月同比 (MoM) 自动计算 *(Phase 1 后半段)*
-- 🤖 **AI 辅助** — MiniMax 大模型驱动的行情分析与摘要 *(Phase 2)*
-- 🔔 **企业微信通知** — 异常价格波动自动推送 *(Phase 2)*
+📊 报价数据管理 — Excel 批量导入、多维查询、航线报价追踪
+📈 量化分析 — 环比 (WoW) / 月同比 (MoM) 自动计算 
+🤖 AI 辅助 — MiniMax 大模型驱动的行情分析与摘要
+🔔 企业微信通知 — 异常价格波动自动推送 
 
 ## 快速启动
 
