@@ -25,23 +25,60 @@ router = APIRouter(prefix="/bot", tags=["Bot Interaction"])
 
 
 # ─────────────────────────────────────────────
-# 意图分类：查价 vs 录入
+# 意图分类：AI 驱动
 # ─────────────────────────────────────────────
 
-IMPORT_KEYWORDS = [
-    "录入", "导入", "整理", "入库", "存入", "保存", "记录",
-    "帮我存", "帮我记", "帮我录", "写入", "添加报价", "新增报价",
-]
+CLASSIFY_PROMPT = """你是一个航运业务机器人的意图分类器。
+用户会发来一段消息，请判断用户的意图属于以下哪一类：
+
+1. "query" — 用户想查询报价、比价、查船期、问运费等（例如："上海到汉堡20GP报价"、"最近有没有便宜的船"）
+2. "import" — 用户想录入、存储、导入报价数据到系统（例如："帮我录入以下报价"、"把这个表存入数据库"，或者直接发了一大段包含港口、船公司、价格的表格数据）
+
+你必须只返回一个词："query" 或 "import"，不要返回其他任何内容。
+
+用户消息：
+"{text}"
+"""
 
 
-def classify_intent(text: str) -> str:
+async def classify_intent(text: str) -> str:
     """
-    基于关键词快速判断用户意图。
+    通过 AI 判断用户意图。失败时降级到关键词匹配。
     返回 'import' 或 'query'。
     """
-    text_lower = text.lower().strip()
-    for kw in IMPORT_KEYWORDS:
-        if kw in text_lower:
+    import httpx
+
+    # --- AI 分类 ---
+    api_key = settings.gemini_api_key
+    if api_key:
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+            payload = {
+                "contents": [{"role": "user", "parts": [{"text": CLASSIFY_PROMPT.format(text=text)}]}],
+                "generationConfig": {"temperature": 0.0, "maxOutputTokens": 10},
+            }
+            proxies = settings.https_proxy or settings.http_proxy or None
+            async with httpx.AsyncClient(proxy=proxies, timeout=8.0) as client:
+                resp = await client.post(url, json=payload)
+                resp.raise_for_status()
+                data = resp.json()
+                if "candidates" in data and data["candidates"]:
+                    parts = data["candidates"][0].get("content", {}).get("parts", [])
+                    if parts:
+                        result = parts[0].get("text", "").strip().lower()
+                        if "import" in result:
+                            logger.info(f"[AI 分类] 意图=import")
+                            return "import"
+                        else:
+                            logger.info(f"[AI 分类] 意图=query")
+                            return "query"
+        except Exception as e:
+            logger.warning(f"[AI 分类] 失败 ({e})，降级到关键词...")
+
+    # --- 关键词兜底 ---
+    keywords = ["录入", "导入", "整理", "入库", "存入", "保存", "记录", "写入", "添加报价", "新增报价"]
+    for kw in keywords:
+        if kw in text:
             return "import"
     return "query"
 
@@ -93,7 +130,7 @@ async def receive_dingtalk_message(
         return {"msgtype": "text", "text": {"content": "我没有收到任何文本哦。"}}
 
     # ─── 意图分类 ───
-    intent_type = classify_intent(text_content)
+    intent_type = await classify_intent(text_content)
 
     if intent_type == "import":
         return await _handle_import(text_content)
