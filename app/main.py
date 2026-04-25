@@ -14,6 +14,7 @@ from app.models import init_db
 from app.api.v1 import rates as rates_router
 from app.api.v1 import vendors as vendors_router
 from app.api.v1 import ports as ports_router
+from app.api.v1 import bot as bot_router
 from app.services.scheduler import start_scheduler, stop_scheduler
 from app.utils.logger import get_logger
 
@@ -68,6 +69,7 @@ app.add_middleware(
 app.include_router(rates_router.router, prefix="/api/v1")
 app.include_router(vendors_router.router, prefix="/api/v1")
 app.include_router(ports_router.router, prefix="/api/v1")
+app.include_router(bot_router.router, prefix="/api/v1")
 
 
 # ─────────────────────────────────────────────

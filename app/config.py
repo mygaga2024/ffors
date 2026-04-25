@@ -27,8 +27,13 @@ class Settings(BaseSettings):
     # --- AI Services — Gemini (备选) ---
     gemini_api_key: str = ""
 
-    # --- Notifications — 企业微信 Webhook ---
-    wecom_webhook_key: str = ""
+    # 通知配置 (WeCom Alert Bot)
+    wecom_webhook_key: Optional[str] = None
+    
+    # 交互机器人配置 (Phase 3 Bot Webhook)
+    dingtalk_app_secret: Optional[str] = None
+    wecom_bot_token: Optional[str] = None
+    wecom_encoding_aes_key: Optional[str] = None
 
     # --- Proxy ---
     http_proxy: str = ""
