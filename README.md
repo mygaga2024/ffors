@@ -32,8 +32,9 @@ cd ffors
 ### 2. 配置环境变量
 
 ```bash
-cp .env.example .env
-# 编辑 .env，填写数据库密码及其他配置
+cp .env.example env
+# 编辑 env，填写数据库密码、API Key 及其他配置
+# 注：使用不带点的前缀是为了防止被 NAS 文件管理器识别为隐藏文件
 ```
 
 ### 3. 启动服务
