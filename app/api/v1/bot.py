@@ -6,81 +6,20 @@ FFORS 机器人交互接口 (Bot Webhooks)
 import base64
 import hashlib
 import hmac
-import re
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Header, HTTPException, Request
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.models.base import get_async_session
 from app.models.rate import OceanRate
-from app.services.intent import parse_intent_for_radar
+from app.services.intent import parse_intent
 from app.services.radar import get_route_recommendations
 from app.utils.logger import get_logger
 
 logger = get_logger("ffors.api.bot")
 router = APIRouter(prefix="/bot", tags=["Bot Interaction"])
-
-
-# ─────────────────────────────────────────────
-# 意图分类：AI 驱动
-# ─────────────────────────────────────────────
-
-CLASSIFY_PROMPT = """你是一个航运业务机器人的意图分类器。
-用户会发来一段消息，请判断用户的意图属于以下哪一类：
-
-1. "query" — 用户想查询报价、比价、查船期、问运费等（例如："上海到汉堡20GP报价"、"最近有没有便宜的船"）
-2. "import" — 用户想录入、存储、导入报价数据到系统（例如："帮我录入以下报价"、"把这个表存入数据库"，或者直接发了一大段包含港口、船公司、价格的表格数据）
-
-你必须只返回一个词："query" 或 "import"，不要返回其他任何内容。
-
-用户消息：
-"{text}"
-"""
-
-
-async def classify_intent(text: str) -> str:
-    """
-    通过 AI 判断用户意图。失败时降级到关键词匹配。
-    返回 'import' 或 'query'。
-    """
-    import httpx
-
-    # --- AI 分类 ---
-    api_key = settings.gemini_api_key
-    if api_key:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-            payload = {
-                "contents": [{"role": "user", "parts": [{"text": CLASSIFY_PROMPT.format(text=text)}]}],
-                "generationConfig": {"temperature": 0.0, "maxOutputTokens": 10},
-            }
-            proxies = settings.https_proxy or settings.http_proxy or None
-            async with httpx.AsyncClient(proxy=proxies, timeout=8.0) as client:
-                resp = await client.post(url, json=payload)
-                resp.raise_for_status()
-                data = resp.json()
-                if "candidates" in data and data["candidates"]:
-                    parts = data["candidates"][0].get("content", {}).get("parts", [])
-                    if parts:
-                        result = parts[0].get("text", "").strip().lower()
-                        if "import" in result:
-                            logger.info(f"[AI 分类] 意图=import")
-                            return "import"
-                        else:
-                            logger.info(f"[AI 分类] 意图=query")
-                            return "query"
-        except Exception as e:
-            logger.warning(f"[AI 分类] 失败 ({e})，降级到关键词...")
-
-    # --- 关键词兜底 ---
-    keywords = ["录入", "导入", "整理", "入库", "存入", "保存", "记录", "写入", "添加报价", "新增报价"]
-    for kw in keywords:
-        if kw in text:
-            return "import"
-    return "query"
 
 
 # ─────────────────────────────────────────────
@@ -129,27 +68,25 @@ async def receive_dingtalk_message(
     if not text_content:
         return {"msgtype": "text", "text": {"content": "我没有收到任何文本哦。"}}
 
-    # ─── 意图分类 ───
-    intent_type = await classify_intent(text_content)
+    # ─── 一次 AI 调用：同时完成分类 + 参数提取 ───
+    intent = await parse_intent(text_content)
 
-    if intent_type == "import":
+    if intent.intent_type == "import":
         return await _handle_import(text_content)
     else:
-        return await _handle_query(text_content)
+        return await _handle_query(intent)
 
 
 # ─────────────────────────────────────────────
-# 查价流程（原有逻辑）
+# 查价流程
 # ─────────────────────────────────────────────
 
-async def _handle_query(text_content: str) -> Dict[str, Any]:
-    """处理查价类意图。"""
-    # 1. 意图解析
-    intent = await parse_intent_for_radar(text_content)
+async def _handle_query(intent) -> Dict[str, Any]:
+    """处理查价类意图（intent 已解析完毕）。"""
     if not intent.is_valid:
         return {"msgtype": "text", "text": {"content": intent.message}}
 
-    # 2. 从数据库拉取数据
+    # 从数据库拉取数据
     session_factory = get_async_session()
     async with session_factory() as db:
         stmt = (
@@ -162,7 +99,7 @@ async def _handle_query(text_content: str) -> Dict[str, Any]:
         result = await db.execute(stmt)
         rates = result.scalars().all()
 
-    # 3. 调用雷达服务
+    # 调用雷达服务
     radar_res = await get_route_recommendations(
         list(rates), 
         intent.container_type, 
@@ -173,7 +110,7 @@ async def _handle_query(text_content: str) -> Dict[str, Any]:
     recs = radar_res.get("recommendations", [])
     risk = radar_res.get("risk_insight", "")
     
-    # 4. 构造钉钉 Markdown 回复
+    # 构造钉钉 Markdown 回复
     if not recs:
         md_text = f"❌ 未找到从 **{intent.pol_code}** 到 **{intent.pod_code}** 的 {intent.container_type} 报价。"
     else:
@@ -183,7 +120,6 @@ async def _handle_query(text_content: str) -> Dict[str, Any]:
             ""
         ]
         
-        # 只展示前 3 名
         for i, r in enumerate(recs[:3]):
             tag_str = " ".join(r['tags']) if r['tags'] else ""
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "🔸"
@@ -207,14 +143,12 @@ async def _handle_query(text_content: str) -> Dict[str, Any]:
             "title": "FFORS 智能雷达报告",
             "text": md_text
         },
-        "at": {
-            "isAtAll": False
-        }
+        "at": {"isAtAll": False}
     }
 
 
 # ─────────────────────────────────────────────
-# 录入流程（新增）
+# 录入流程
 # ─────────────────────────────────────────────
 
 async def _handle_import(text_content: str) -> Dict[str, Any]:
@@ -231,9 +165,7 @@ async def _handle_import(text_content: str) -> Dict[str, Any]:
             "title": "FFORS 运价录入",
             "text": result_text
         },
-        "at": {
-            "isAtAll": False
-        }
+        "at": {"isAtAll": False}
     }
 
 
@@ -244,7 +176,6 @@ async def _handle_import(text_content: str) -> Dict[str, Any]:
 @router.get("/wecom/receive", summary="企业微信 URL 验证预留")
 async def verify_wecom_url(request: Request):
     """企业微信后台填入回调 URL 时的 GET 握手验证接口 (需实现加解密)"""
-    # 此处预留实现逻辑，正式接入需引入 wechatpy[cryptography] 或手动 AES
     return "wecom_reserved"
 
 @router.post("/wecom/receive", summary="企业微信消息回调预留")

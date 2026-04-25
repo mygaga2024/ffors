@@ -2,6 +2,7 @@
 FFORS 意图识别服务 (Intent Service)
 处理来自机器人的自然语言消息，通过大模型提取核心查询参数（起运港、目的港、箱型）。
 支持 MiniMax / Gemini 双引擎自动降级切换。
+一次调用同时完成 意图分类 + 参数提取，避免多次 AI 调用导致钉钉超时。
 """
 
 import json
@@ -17,6 +18,7 @@ logger = get_logger("ffors.services.intent")
 
 
 class RadarIntent(BaseModel):
+    intent_type: str = "query"  # "query" | "import"
     pol_code: Optional[str] = None
     pod_code: Optional[str] = None
     container_type: str = "40HQ"  # 默认 40HQ
@@ -24,21 +26,33 @@ class RadarIntent(BaseModel):
     message: str = "未识别到起运港或目的港。"
 
 
-# 统一 Prompt，供两个引擎复用
-INTENT_PROMPT = """你是一个航运业务意图解析助手。
-请从以下用户输入中提取起运港 (POL)、目的港 (POD) 以及箱型 (20GP, 40GP, 40HQ)。
-如果用户提到港口中文名（如"上海"、"鹿特丹"、"汉堡"），请务必转换为标准的五字码港口代码（如 "CNSHA", "NLRTM", "DEHAM"）。
-如果用户未指定箱型，默认为 "40HQ"。
+# 统一 Prompt：一次调用完成分类 + 解析
+INTENT_PROMPT = """你是一个航运业务智能助手，需要完成两项任务：
+
+**任务1：意图分类**
+判断用户消息属于哪种意图：
+- "query"：用户想查询报价、比价、查船期、问运费（如"上海到汉堡20GP报价"、"最近去鹿特丹有什么便宜的船"）
+- "import"：用户想录入、保存报价数据到系统（如"帮我存一下报价"），或者直接发了一段包含港口、船公司、价格的报价数据
+
+**任务2：参数提取（仅当 intent_type 为 query 时需要精确提取）**
+- 从用户输入中提取起运港 (POL)、目的港 (POD) 以及箱型 (20GP, 40GP, 40HQ)
+- 港口中文名需转换为标准五字码（如"上海"→"CNSHA"、"鹿特丹"→"NLRTM"、"汉堡"→"DEHAM"）
+- 如果用户未指定箱型，默认为 "40HQ"
 
 你必须只返回一个合法的 JSON，不要返回其他任何内容。格式如下：
 {{
+  "intent_type": "query",
   "pol_code": "CNSHA",
   "pod_code": "NLRTM",
   "container_type": "40HQ",
   "is_valid": true,
   "message": "识别成功"
 }}
-如果未能识别出 pol_code 或 pod_code，请将 is_valid 置为 false，并在 message 中说明原因。
+
+规则：
+- 如果是 import 意图：intent_type 设为 "import"，is_valid 设为 true，其他字段可为 null
+- 如果是 query 意图但未能识别出 pol_code 或 pod_code：is_valid 设为 false，message 中说明原因
+- 如果是 query 意图且识别成功：is_valid 设为 true
 
 用户输入：
 "{user_text}"
@@ -133,12 +147,14 @@ async def _call_gemini(prompt: str) -> Optional[str]:
 
 
 # ─────────────────────────────────────────────
-# 主入口：自动降级调度
+# 主入口：一次调用完成分类+解析
 # ─────────────────────────────────────────────
 
-async def parse_intent_for_radar(user_text: str) -> RadarIntent:
+async def parse_intent(user_text: str) -> RadarIntent:
     """
-    解析用户输入的自然语言，提取起运港、目的港与箱型。
+    解析用户输入的自然语言，一次 AI 调用同时完成：
+    1. 意图分类（query / import）
+    2. 查价参数提取（pol_code, pod_code, container_type）
     优先使用 MiniMax，失败时自动降级到 Gemini。
     """
     prompt = INTENT_PROMPT.format(user_text=user_text)
@@ -168,3 +184,8 @@ async def parse_intent_for_radar(user_text: str) -> RadarIntent:
         logger.error(f"[Gemini] 调用也失败: {e}")
 
     return RadarIntent(message="所有 AI 引擎均无法解析，请稍后再试。")
+
+
+# 保留旧函数名的兼容别名
+async def parse_intent_for_radar(user_text: str) -> RadarIntent:
+    return await parse_intent(user_text)
