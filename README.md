@@ -71,36 +71,6 @@ open http://localhost:8000/docs
 |-----|-----|---------|------|------|------|----------|-----|----------|------------|----------|---------|
 | CNSHA | NLRTM | COSCO | 1200 | 1800 | 2000 | USD | 2025-01-15 | 28 | 2025-01-01 | 2025-01-31 | - |
 
-## 项目结构
-
-```
-ffors/
-├── Dockerfile                # Docker 镜像构建
-├── docker-compose.yml        # 容器编排
-├── requirements.txt          # Python 依赖
-├── .env.example              # 环境变量模板
-├── .gitignore                # 隐私拦截
-│
-├── app/
-│   ├── main.py               # FastAPI 应用入口
-│   ├── config.py             # 全局配置
-│   ├── models/               # ORM 数据模型
-│   │   ├── base.py           # SQLAlchemy 基类
-│   │   ├── port.py           # 港口映射表
-│   │   ├── vendor.py         # 供应商表
-│   │   └── rate.py           # 核心报价表
-│   ├── schemas/              # Pydantic 数据校验
-│   │   └── rate.py           # 报价 Schema
-│   ├── services/             # 业务逻辑层
-│   │   └── ingestion.py      # Excel 导入服务
-│   ├── api/v1/               # API 路由层
-│   │   └── rates.py          # 报价端点
-│   └── utils/
-│       └── logger.py         # 统一日志
-│
-└── data/
-    └── seed_ports.json       # 全球 166 个核心港口种子数据
-```
 
 ## 技术栈
 
@@ -116,10 +86,7 @@ ffors/
 | 目标环境 | 绿联 DXP4800 Plus NAS | x86_64 / UGOS Pro |
 
 ## NAS 部署说明
-
-本项目针对 **绿联 DXP4800 Plus** NAS 优化：
-
-1. 使用 `linux/amd64` 架构镜像（Intel Pentium Gold 8505）
+1. 使用 `linux/amd64` 架构镜像
 2. PostgreSQL 数据卷持久化（建议挂载到 SSD 存储池）
 3. 应用日志卷独立管理
 
