@@ -20,6 +20,12 @@ services:
       - "15432:5432"
     volumes:
       - ffors_pgdata:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ffors_user -d ffors"]
       interval: 10s
@@ -43,7 +49,12 @@ services:
       DATA_DIR: /app/data
       LOG_DIR: /app/logs
       TZ: Asia/Shanghai
-
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 1G
     ports:
       - "11800:8000"
     volumes:
