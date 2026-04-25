@@ -9,6 +9,8 @@ services:
     image: postgres:16-alpine
     container_name: ffors-db
     restart: unless-stopped
+    env_file:
+      - env
     environment:
       POSTGRES_DB: ffors
       POSTGRES_USER: ffors_user
@@ -33,11 +35,13 @@ services:
     depends_on:
       ffors-db:
         condition: service_healthy
+    env_file:
+      - env
     environment:
       DATABASE_URL: postgresql+asyncpg://ffors_user:${DB_PASSWORD:-ffors_dev_2024}@ffors-db:5432/ffors
       DATA_DIR: /app/data
       LOG_DIR: /app/logs
-      # AI & 通知 (Phase 2 填充)
+      # 以下变量将优先从 env 文件中读取，此处保留插值映射以支持 Shell 环境
       MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
       MINIMAX_BASE_URL: ${MINIMAX_BASE_URL:-https://api.minimaxi.com/v1}
       MINIMAX_GROUP_ID: ${MINIMAX_GROUP_ID:-}
