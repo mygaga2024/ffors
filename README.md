@@ -80,8 +80,6 @@ ffors/
 ├── requirements.txt          # Python 依赖
 ├── .env.example              # 环境变量模板
 ├── .gitignore                # 隐私拦截
-├── DEVELOPMENT_PROTOCOL.md   # 开发约束协议
-├── MULTI_AGENT_PROTOCOL.md   # 多Agent协作协议
 │
 ├── app/
 │   ├── main.py               # FastAPI 应用入口
@@ -130,15 +128,6 @@ ffors/
 docker compose up -d
 docker compose logs -f ffors-api
 ```
-
-## 开发规范
-
-本项目严格遵循 `DEVELOPMENT_PROTOCOL.md` 中的开发约束：
-
-- **最小干预** — 增量修改，不做无关重构
-- **代码数据解耦** — 敏感数据通过 Volume 挂载
-- **一步一步来** — 先读后写，单点突破
-- **隐私安全** — 严禁硬编码凭据
 
 ## License
 
