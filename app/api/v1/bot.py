@@ -1,11 +1,12 @@
 """
 FFORS 机器人交互接口 (Bot Webhooks)
-接收来自钉钉或企业微信的 POST 消息，通过意图解析后触发比价雷达。
+接收来自钉钉或企业微信的 POST 消息，通过意图解析后触发比价雷达或运价录入。
 """
 
 import base64
 import hashlib
 import hmac
+import re
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -21,6 +22,28 @@ from app.utils.logger import get_logger
 
 logger = get_logger("ffors.api.bot")
 router = APIRouter(prefix="/bot", tags=["Bot Interaction"])
+
+
+# ─────────────────────────────────────────────
+# 意图分类：查价 vs 录入
+# ─────────────────────────────────────────────
+
+IMPORT_KEYWORDS = [
+    "录入", "导入", "整理", "入库", "存入", "保存", "记录",
+    "帮我存", "帮我记", "帮我录", "写入", "添加报价", "新增报价",
+]
+
+
+def classify_intent(text: str) -> str:
+    """
+    基于关键词快速判断用户意图。
+    返回 'import' 或 'query'。
+    """
+    text_lower = text.lower().strip()
+    for kw in IMPORT_KEYWORDS:
+        if kw in text_lower:
+            return "import"
+    return "query"
 
 
 # ─────────────────────────────────────────────
@@ -69,6 +92,21 @@ async def receive_dingtalk_message(
     if not text_content:
         return {"msgtype": "text", "text": {"content": "我没有收到任何文本哦。"}}
 
+    # ─── 意图分类 ───
+    intent_type = classify_intent(text_content)
+
+    if intent_type == "import":
+        return await _handle_import(text_content)
+    else:
+        return await _handle_query(text_content)
+
+
+# ─────────────────────────────────────────────
+# 查价流程（原有逻辑）
+# ─────────────────────────────────────────────
+
+async def _handle_query(text_content: str) -> Dict[str, Any]:
+    """处理查价类意图。"""
     # 1. 意图解析
     intent = await parse_intent_for_radar(text_content)
     if not intent.is_valid:
@@ -126,12 +164,35 @@ async def receive_dingtalk_message(
         
         md_text = "\n".join(lines)
 
-    # 返回钉钉要求的 Markdown 格式
     return {
         "msgtype": "markdown",
         "markdown": {
             "title": "FFORS 智能雷达报告",
             "text": md_text
+        },
+        "at": {
+            "isAtAll": False
+        }
+    }
+
+
+# ─────────────────────────────────────────────
+# 录入流程（新增）
+# ─────────────────────────────────────────────
+
+async def _handle_import(text_content: str) -> Dict[str, Any]:
+    """处理运价录入类意图。"""
+    from app.services.text_importer import import_rates_from_text
+
+    logger.info(f"[录入模式] 开始 AI 解析文本...")
+    result_text = await import_rates_from_text(text_content)
+    logger.info(f"[录入模式] 结果: {result_text}")
+
+    return {
+        "msgtype": "markdown",
+        "markdown": {
+            "title": "FFORS 运价录入",
+            "text": result_text
         },
         "at": {
             "isAtAll": False
