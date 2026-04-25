@@ -55,7 +55,7 @@ services:
       HTTP_PROXY: ${HTTP_PROXY:-}
       HTTPS_PROXY: ${HTTPS_PROXY:-}
     ports:
-      - "8000:8000"
+      - "11800:8000"
     volumes:
       - ./data:/app/data
       - ffors_logs:/app/logs
