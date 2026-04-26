@@ -164,6 +164,13 @@ async def get_route_recommendations(
                 display_route = "中转"
                 display_transit = raw_transit if raw_transit else "-"
 
+            # 备注清洗逻辑：移除已在专门列展示的路由信息
+            clean_remarks = r.remarks or ""
+            for word in ["直达", "中转"]:
+                clean_remarks = clean_remarks.replace(word, "").strip()
+            # 移除多余的竖线或分隔符
+            clean_remarks = clean_remarks.strip("|").strip()
+
             valid_rates.append({
                 "carrier": r.carrier,
                 "price": price,
@@ -174,7 +181,7 @@ async def get_route_recommendations(
                 "validity_period": validity_period,
                 "wow": wow,
                 "risk": r.risk_score,
-                "remarks": r.remarks or ""
+                "remarks": clean_remarks
             })
             
     if not valid_rates:
