@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # --- AI Services — Gemini (备选) ---
     gemini_api_key: str = ""
 
+    # --- AI Services — DeepSeek (补位) ---
+    deepseek_api_key: str = ""
+
     # 通知配置 (WeCom Alert Bot)
     wecom_webhook_key: Optional[str] = None
     

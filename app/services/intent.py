@@ -117,33 +117,73 @@ async def _call_minimax(prompt: str) -> Optional[str]:
 
 
 # ─────────────────────────────────────────────
-# 引擎 2: Gemini (降级备选)
+# 引擎 2: DeepSeek (新补位，高稳定)
 # ─────────────────────────────────────────────
 
-async def _call_gemini(prompt: str) -> Optional[str]:
-    """调用 Google Gemini API，返回模型回复文本。"""
-    api_key = settings.gemini_api_key
+async def _call_deepseek(prompt: str) -> Optional[str]:
+    """调用 DeepSeek API，返回模型回复文本。"""
+    api_key = settings.deepseek_api_key
     if not api_key:
         return None
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    url = "https://api.deepseek.com/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
     payload = {
-        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.1,
-        },
+        "model": "deepseek-chat",
+        "messages": [
+            {"role": "system", "content": "你是一个航运业务意图解析助手，只返回合法JSON，不要附加任何解释。"},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.1,
     }
 
     proxies = settings.https_proxy or settings.http_proxy or None
     async with httpx.AsyncClient(proxy=proxies, timeout=15.0) as client:
-        response = await client.post(url, json=payload)
+        response = await client.post(url, headers=headers, json=payload)
         response.raise_for_status()
         data = response.json()
+        if "choices" in data and data["choices"]:
+            return data["choices"][0]["message"]["content"].strip()
+    return None
 
-        if "candidates" in data and data["candidates"]:
-            parts = data["candidates"][0].get("content", {}).get("parts", [])
-            if parts:
-                return parts[0].get("text", "").strip()
+
+# ─────────────────────────────────────────────
+# 引擎 3: Gemini (降级备选)
+# ─────────────────────────────────────────────
+
+async def _call_gemini(prompt: str) -> Optional[str]:
+    """调用 Google Gemini API，支持多版本自动回退。"""
+    api_key = settings.gemini_api_key
+    if not api_key:
+        return None
+
+    # 按优先级尝试不同版本
+    models = ["gemini-3.1-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+    
+    for model_name in models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+        payload = {
+            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "generationConfig": {"temperature": 0.1},
+        }
+
+        try:
+            proxies = settings.https_proxy or settings.http_proxy or None
+            async with httpx.AsyncClient(proxy=proxies, timeout=15.0) as client:
+                response = await client.post(url, json=payload)
+                if response.status_code == 200:
+                    data = response.json()
+                    if "candidates" in data and data["candidates"]:
+                        parts = data["candidates"][0].get("content", {}).get("parts", [])
+                        if parts:
+                            return parts[0].get("text", "").strip()
+                logger.warning(f"[Gemini] 模型 {model_name} 请求失败 (Status: {response.status_code})，尝试下一个...")
+        except Exception as e:
+            logger.warning(f"[Gemini] 模型 {model_name} 异常: {e}")
+            
     return None
 
 
@@ -160,27 +200,33 @@ async def parse_intent(user_text: str) -> RadarIntent:
     """
     prompt = INTENT_PROMPT.format(user_text=user_text)
 
-    # --- 引擎 1: MiniMax ---
+    # --- 引擎 1: MiniMax (主力) ---
     try:
         reply = await _call_minimax(prompt)
         if reply:
-            logger.info(f"[MiniMax] 回复: {reply}")
             intent = _extract_intent_from_text(reply)
             if intent:
                 return intent
-            logger.warning("[MiniMax] 返回了非预期格式，降级到 Gemini...")
     except Exception as e:
-        logger.warning(f"[MiniMax] 调用失败 ({e})，降级到 Gemini...")
+        logger.warning(f"[MiniMax] 调用失败 ({e})，尝试 DeepSeek...")
 
-    # --- 引擎 2: Gemini (降级) ---
+    # --- 引擎 2: DeepSeek (首选补位) ---
+    try:
+        reply = await _call_deepseek(prompt)
+        if reply:
+            intent = _extract_intent_from_text(reply)
+            if intent:
+                return intent
+    except Exception as e:
+        logger.warning(f"[DeepSeek] 调用失败 ({e})，尝试 Gemini...")
+
+    # --- 引擎 3: Gemini (降级) ---
     try:
         reply = await _call_gemini(prompt)
         if reply:
-            logger.info(f"[Gemini] 回复: {reply}")
             intent = _extract_intent_from_text(reply)
             if intent:
                 return intent
-            logger.error(f"[Gemini] 返回了非预期格式: {reply}")
     except Exception as e:
         logger.error(f"[Gemini] 调用也失败: {e}")
 
