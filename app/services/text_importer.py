@@ -41,11 +41,11 @@ EXTRACT_PROMPT = """你是一个顶级的货代海运报价解析专家。
 async def extract_rates_from_text(user_text: str) -> Optional[list[dict]]:
     """
     调用 AI 模型从自由文本中提取运价数据。
-    优先级：DeepSeek -> MiniMax -> Gemini (3.1 -> 1.5)
+    优先级：DeepSeek-V4-Pro -> MiniMax -> Gemini (1.5 Pro -> 1.5 Flash)
     """
     prompt = EXTRACT_PROMPT.format(user_text=user_text)
 
-    # --- 引擎 1: DeepSeek (逻辑最强) ---
+    # --- 引擎 1: DeepSeek (V4 Flagship) ---
     try:
         result = await _call_deepseek_extract(prompt)
         if result: return result
@@ -110,7 +110,7 @@ async def _call_deepseek_extract(prompt: str) -> Optional[list[dict]]:
     url = "https://api.deepseek.com/chat/completions"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     payload = {
-        "model": "deepseek-chat",
+        "model": "deepseek-v4-pro",
         "messages": [
             {"role": "system", "content": "你是一个运价提取助手，只返回 JSON 数组。"},
             {"role": "user", "content": prompt}

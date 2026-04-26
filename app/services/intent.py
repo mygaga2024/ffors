@@ -138,7 +138,7 @@ async def _call_deepseek(prompt: str) -> Optional[str]:
         "Content-Type": "application/json",
     }
     payload = {
-        "model": "deepseek-chat",
+        "model": "deepseek-v4-pro",
         "messages": [
             {"role": "system", "content": "你是一个航运业务意图解析助手，只返回合法JSON，不要附加任何解释。"},
             {"role": "user", "content": prompt}
@@ -206,17 +206,7 @@ async def parse_intent(user_text: str) -> RadarIntent:
     """
     prompt = INTENT_PROMPT.format(user_text=user_text)
 
-    # --- 引擎 1: MiniMax (主力) ---
-    try:
-        reply = await _call_minimax(prompt)
-        if reply:
-            intent = _extract_intent_from_text(reply)
-            if intent:
-                return intent
-    except Exception as e:
-        logger.warning(f"[MiniMax] 调用失败 ({e})，尝试 DeepSeek...")
-
-    # --- 引擎 2: DeepSeek (首选补位) ---
+    # --- 引擎 1: DeepSeek (V4 Flagship) ---
     try:
         reply = await _call_deepseek(prompt)
         if reply:
@@ -224,7 +214,17 @@ async def parse_intent(user_text: str) -> RadarIntent:
             if intent:
                 return intent
     except Exception as e:
-        logger.warning(f"[DeepSeek] 调用失败 ({e})，尝试 Gemini...")
+        logger.warning(f"[DeepSeek] 调用失败 ({e})，尝试 MiniMax...")
+
+    # --- 引擎 2: MiniMax ---
+    try:
+        reply = await _call_minimax(prompt)
+        if reply:
+            intent = _extract_intent_from_text(reply)
+            if intent:
+                return intent
+    except Exception as e:
+        logger.warning(f"[MiniMax] 调用失败 ({e})，尝试 Gemini...")
 
     # --- 引擎 3: Gemini (降级) ---
     try:
