@@ -36,8 +36,10 @@ COPY --from=deps /usr/local/bin /usr/local/bin
 # 预创建挂载点目录
 RUN mkdir -p /app/data /app/logs
 
-# 复制应用代码
+# 复制应用代码与迁移配置
 COPY app/ /app/app/
+COPY alembic/ /app/alembic/
+COPY alembic.ini /app/alembic.ini
 COPY data/seed_ports.json /app/data/seed_ports.json
 
 # 暴露端口
