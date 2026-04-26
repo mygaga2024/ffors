@@ -14,6 +14,7 @@ from sqlalchemy import select
 from app.config import settings
 from app.models.base import get_async_session
 from app.models.rate import OceanRate
+from app.models.port import Port
 from app.services.intent import parse_intent
 from app.services.radar import get_route_recommendations
 from app.utils.logger import get_logger
@@ -111,6 +112,12 @@ async def _handle_query(intent) -> Dict[str, Any]:
     # 从数据库拉取数据
     session_factory = get_async_session()
     async with session_factory() as db:
+        # 获取港口全称以便展示
+        pol_port = (await db.execute(select(Port).where(Port.code == intent.pol_code))).scalar_one_or_none()
+        pod_port = (await db.execute(select(Port).where(Port.code == intent.pod_code))).scalar_one_or_none()
+        pol_display = pol_port.name_en if pol_port else intent.pol_code
+        pod_display = pod_port.name_en if pod_port else intent.pod_code
+
         stmt = (
             select(OceanRate)
             .where(
@@ -134,10 +141,10 @@ async def _handle_query(intent) -> Dict[str, Any]:
     
     # 构造钉钉 Markdown 回复
     if not recs:
-        md_text = f"❌ 未找到从 **{intent.pol_code}** 到 **{intent.pod_code}** 的 {intent.container_type} 报价。"
+        md_text = f"❌ 未找到从 **{pol_display}** 到 **{pod_display}** 的 {intent.container_type} 报价。"
     else:
         lines = [
-            f"### ⚡ FFORS 比价雷达 ({intent.pol_code} ➔ {intent.pod_code})",
+            f"### {pol_display} ➔ {pod_display}",
             f"**箱型**: {intent.container_type} | **检索结果**: {min(len(recs), 5)} 条",
             ""
         ]
@@ -159,7 +166,7 @@ async def _handle_query(intent) -> Dict[str, Any]:
 
         lines.append("")
             
-        lines.append(f"**🤖 RAG 风险交叉验证锦囊:**")
+        lines.append(f"**🤖 风险建议:**")
         lines.append(f"> {risk}")
         
         md_text = "\n".join(lines)

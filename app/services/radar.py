@@ -153,11 +153,22 @@ async def get_route_recommendations(
             if r.valid_from and r.valid_to:
                 validity_period = f"{r.valid_from.strftime('%Y.%m.%d')}-{r.valid_to.strftime('%Y.%m.%d')}"
                 
+            # 路由解析逻辑 (直达/中转与中转港分离)
+            raw_route = getattr(r, "route_type", "DIRECT") or "DIRECT"
+            raw_transit = getattr(r, "transit_port", None)
+            
+            if raw_route.upper() in ["DIRECT", "直达"]:
+                display_route = "直达"
+                display_transit = "-"
+            else:
+                display_route = "中转"
+                display_transit = raw_transit if raw_transit else "-"
+
             valid_rates.append({
                 "carrier": r.carrier,
                 "price": price,
-                "route_type": getattr(r, "route_type", None),
-                "transit_port": getattr(r, "transit_port", None),
+                "route_type": display_route,
+                "transit_port": display_transit,
                 "etd_weekday": etd_weekday,
                 "tt_days": r.tt_days,
                 "validity_period": validity_period,

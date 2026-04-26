@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     # --- AI Services — MiniMax ---
     minimax_api_key: str = ""
-    minimax_base_url: str = "https://api.minimaxi.com/v1"
+    minimax_base_url: str = "https://api.minimax.chat/v1"
     minimax_group_id: str = ""
 
     # --- AI Services — Gemini (备选) ---
