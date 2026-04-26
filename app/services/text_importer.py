@@ -14,54 +14,60 @@ from app.utils.logger import get_logger
 
 logger = get_logger("ffors.services.text_importer")
 
-# AI 提取运价的 Prompt
-EXTRACT_PROMPT = """你是一个海运报价数据提取助手。
-请从以下用户输入中提取所有运价信息，将每一条报价整理为标准 JSON 数组。
+EXTRACT_PROMPT = """你是一个专业的货代海运报价解析助手。
+请从以下用户输入中提取所有运价信息，并整理为标准 JSON 数组。
 
-每条报价包含以下字段（尽可能提取，缺失的用 null）：
-- pol_code: 起运港五字码（如"上海"→"CNSHA"、"宁波"→"CNNGB"）
-- pod_code: 目的港五字码（如"汉堡"→"DEHAM"、"鹿特丹"→"NLRTM"）
-- carrier: 船公司名称（如 MSC、COSCO、MSK、OOCL、CMA）
-- price_20gp: 20GP 价格（纯数字）
-- price_40gp: 40GP 价格（纯数字）
-- price_40hq: 40HQ 价格（纯数字）
-- currency: 币种（默认 "USD"，如果提到人民币用 "CNY"）
-- etd: 预计开航日（格式 "YYYY-MM-DD"，如"下周五"请根据当前日期推算）
-- tt_days: 航程天数
-- valid_from: 报价生效日
-- valid_to: 报价失效日
-- remarks: 备注
+### 关键解析规则：
+1. **识别层级结构**：
+   - 文本通常具有层级：起运港(POL) -> 目的港(POD) -> 船公司明细。
+   - 如果某行提到"上海出"或"SHANGHAI O/B"，后续所有报价默认 POL 都是 "CNSHA"。
+   - 如果某行提到"海防"或"HAIPHONG"，在该标题下的所有明细行 POD 都是 "VNHPH"。
+2. **价格解析规则**：
+   - 格式如 "400/600" 或 "400/600/600"：
+     - 第一个数字对应 20GP
+     - 第二个数字对应 40GP
+     - 第三个数字（如果有）对应 40HQ；如果没有，则 40HQ 等于 40GP。
+3. **日期处理**：
+   - 船期如 "4.26"：请自动补全为当前年份，输出 "2026-04-26"。
+4. **字段映射**：
+   - pol_code / pod_code: 必须转换为标准五字码。
+   - carrier: 转换为标准代码（如 COSCO, MSC, MSK, ONE）。
+   - price_20gp / price_40gp / price_40hq: 纯数字。
 
-你必须只返回一个合法的 JSON 数组，不要返回其他任何内容。
-即使只有一条也要用数组包裹：[{{...}}]
-
-用户输入：
+### 待解析文本：
 "{user_text}"
-"""
+
+你必须只返回一个合法的 JSON 数组 [{{...}}, {{...}}]，不要返回任何解释文字。"""
 
 
 async def extract_rates_from_text(user_text: str) -> Optional[list[dict]]:
     """
     调用 AI 模型从自由文本中提取运价数据。
-    优先 MiniMax，失败降级到 Gemini。
+    优先级：MiniMax -> DeepSeek -> Gemini (3.1 -> 2.5 -> 1.5)
     """
     prompt = EXTRACT_PROMPT.format(user_text=user_text)
 
     # --- 引擎 1: MiniMax ---
     try:
         result = await _call_minimax_extract(prompt)
-        if result:
-            return result
+        if result: return result
     except Exception as e:
-        logger.warning(f"[MiniMax] 提取失败 ({e})，降级到 Gemini...")
+        logger.warning(f"[MiniMax] 提取失败: {e}")
 
-    # --- 引擎 2: Gemini ---
+    # --- 引擎 2: DeepSeek ---
     try:
-        result = await _call_gemini_extract(prompt)
-        if result:
-            return result
+        result = await _call_deepseek_extract(prompt)
+        if result: return result
     except Exception as e:
-        logger.error(f"[Gemini] 提取也失败: {e}")
+        logger.warning(f"[DeepSeek] 提取失败: {e}")
+
+    # --- 引擎 3: Gemini (多版本回退) ---
+    for model_version in ["gemini-1.5-pro", "gemini-1.5-flash"]:
+        try:
+            result = await _call_gemini_extract(prompt, model_version)
+            if result: return result
+        except Exception as e:
+            logger.warning(f"[Gemini-{model_version}] 提取失败: {e}")
 
     return None
 
@@ -98,13 +104,40 @@ async def _call_minimax_extract(prompt: str) -> Optional[list[dict]]:
     return None
 
 
-async def _call_gemini_extract(prompt: str) -> Optional[list[dict]]:
+async def _call_deepseek_extract(prompt: str) -> Optional[list[dict]]:
+    """DeepSeek 提取"""
+    api_key = settings.deepseek_api_key
+    if not api_key: return None
+
+    url = "https://api.deepseek.com/chat/completions"
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    payload = {
+        "model": "deepseek-chat",
+        "messages": [
+            {"role": "system", "content": "你是一个运价提取助手，只返回 JSON 数组。"},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.1,
+    }
+
+    proxies = settings.http_proxy or None
+    async with httpx.AsyncClient(proxy=proxies, timeout=30.0) as client:
+        response = await client.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        if "choices" in data and data["choices"]:
+            reply = data["choices"][0]["message"]["content"].strip()
+            return _parse_json_array(reply)
+    return None
+
+
+async def _call_gemini_extract(prompt: str, model: str = "gemini-1.5-flash") -> Optional[list[dict]]:
     """Gemini 提取"""
     api_key = settings.gemini_api_key
     if not api_key:
         return None
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.1},
