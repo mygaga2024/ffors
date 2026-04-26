@@ -14,30 +14,30 @@ from app.utils.logger import get_logger
 
 logger = get_logger("ffors.services.text_importer")
 
-EXTRACT_PROMPT = """你是一个专业的货代海运报价解析助手。
+EXTRACT_PROMPT = """你是一个顶级的货代海运报价解析专家。
 请从以下用户输入中提取所有运价信息，并整理为标准 JSON 数组。
 
-### 关键解析规则：
+### 核心解析规则：
 1. **识别层级结构**：
    - 文本通常具有层级：起运港(POL) -> 目的港(POD) -> 船公司明细。
-   - 如果某行提到"上海出"或"SHANGHAI O/B"，后续所有报价默认 POL 都是 "CNSHA"。
-   - 如果某行提到"海防"或"HAIPHONG"，在该标题下的所有明细行 POD 都是 "VNHPH"。
-2. **价格解析规则**：
-   - 格式如 "400/600" 或 "400/600/600"：
-     - 第一个数字对应 20GP
-     - 第二个数字对应 40GP
-     - 第三个数字（如果有）对应 40HQ；如果没有，则 40HQ 等于 40GP。
-3. **日期处理**：
-   - 船期如 "4.26"：请自动补全为当前年份，输出 "2026-04-26"。
-4. **字段映射**：
-   - pol_code / pod_code: 必须转换为标准五字码。
-   - carrier: 转换为标准代码（如 COSCO, MSC, MSK, ONE）。
-   - price_20gp / price_40gp / price_40hq: 纯数字。
+   - 如果某行提到"上海出"或"SHANGHAI O/B"，后续所有报价默认 POL 均为 "CNSHA"。
+   - 如果某行提到"西雅图"或"SEATTLE"，在该标题下的所有明细行 POD 均为 "USSEA"。
+2. **箱型与价格识别**：
+   - 格式 "400/600"：第一个是 20GP，第二个是 40GP/40HQ。
+   - `20GP`/`小柜` ➔ price_20gp；`40GP`/`大柜` ➔ price_40gp；`40HQ`/`高柜`/`高箱`/`40'HQ` ➔ price_40hq。
+3. **关键转换**：
+   - 长荣 ➔ EMC, 马士基 ➔ MSK, 中远 ➔ COSCO, 地中海 ➔ MSC, 达飞 ➔ CMA, 赫伯罗特 ➔ HPL。
+   - "直达" ➔ route_type: "DIRECT", "中转" ➔ route_type: "TRANSIT"。
+4. **日期处理**：
+   - 将 "4.26" 或 "5月15号" 自动补全为当前年份 "2026-XX-XX"。
+   - "船期每周4" ➔ 请在 remarks 中记录，并在 etd 字段推算一个近期日期。
 
 ### 待解析文本：
 "{user_text}"
 
-你必须只返回一个合法的 JSON 数组 [{{...}}, {{...}}]，不要返回任何解释文字。"""
+你必须只返回 JSON 数组 [{{...}}, {{...}}]，不要返回任何解释。"""
+
+你必须只返回 JSON 数组，严禁输出任何多余文字。"""
 
 
 async def extract_rates_from_text(user_text: str) -> Optional[list[dict]]:
