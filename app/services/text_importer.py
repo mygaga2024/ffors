@@ -15,25 +15,27 @@ from app.utils.logger import get_logger
 logger = get_logger("ffors.services.text_importer")
 
 EXTRACT_PROMPT = """你是一个顶级的货代海运报价解析专家。
-请从以下文本中提取所有运价信息，并整理为标准 JSON 数组。
+请将文本中的运价提取为标准 JSON 数组。
+
+### 必须包含的 JSON 字段：
+- pol_code: 起运港标准五字码 (如 CNSHA)
+- pod_code: 目的港标准五字码 (如 USLAX)
+- carrier: 船公司代码 (如 MSC, COSCO)
+- price_20gp, price_40gp, price_40hq: 价格(数字)
+- currency: 币种 (默认 USD)
+- etd: 开航日期 (YYYY-MM-DD)
+- route_type: "DIRECT" 或 "TRANSIT"
+- remarks: 备注
 
 ### 核心解析规则：
-1. **港口转换 (关键)**：
-   - 将所有提到的港口中文名转换为标准 **UN/LOCODE 五字码**（如：上海->CNSHA, 洛杉矶->USLAX, 长滩->USLGB, 马尼拉->PHMNL, 奥克兰->USOAK 等）。
-2. **识别层级结构**：
-   - 文本可能具有层级：起运港(POL) -> 目的港(POD) -> 船公司明细。
-   - 如果某行提到"XX出"，后续明细默认 POL 均为该港口。
-3. **价格与箱型识别**：
-   - 精准识别 20GP, 40GP, 40HQ 价格。
-   - `小柜` -> 20GP, `大柜` -> 40GP, `高箱/高柜/40'HQ` -> 40HQ。
-4. **关键转换**：
-   - 船公司映射为代码：长荣 -> EMC, 马士基 -> MSK, 中远 -> COSCO, 地中海 -> MSC, 达飞 -> CMA, 赫伯罗特 -> HPL, 万海 -> WHL。
-   - 提取并补全日期（当前年份 2026），识别直达(DIRECT)/中转(TRANSIT)。
+1. **港口转换**：自主将中文港口名转换为标准 UN/LOCODE 五字码。
+2. **层级结构**：识别"XX出"作为后续报价的默认起运港。
+3. **箱型识别**：小柜->20GP, 大柜->40GP, 高箱->40HQ。
 
 ### 待解析文本：
 "{user_text}"
 
-你必须只返回 JSON 数组 [{{...}}]，严禁输出任何解释文字。"""
+你必须只返回 JSON 数组 [{{...}}]，不要返回任何解释。"""
 
 
 async def extract_rates_from_text(user_text: str) -> Optional[list[dict]]:
