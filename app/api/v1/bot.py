@@ -125,6 +125,16 @@ async def _handle_query(intent) -> Dict[str, Any]:
                 OceanRate.pod_code == intent.pod_code
             )
         )
+        # 如果用户指定了船公司，则增加过滤条件
+        if intent.carrier:
+            from sqlalchemy import or_
+            stmt = stmt.where(
+                or_(
+                    OceanRate.carrier.ilike(f"%{intent.carrier}%"),
+                    OceanRate.remarks.ilike(f"%{intent.carrier}%")
+                )
+            )
+
         result = await db.execute(stmt)
         rates = result.scalars().all()
 
