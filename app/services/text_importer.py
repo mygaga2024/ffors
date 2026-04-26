@@ -182,22 +182,27 @@ async def import_rates_from_text(user_text: str) -> str:
     if not rates_data:
         return "❌ 未能从文本中提取到有效的运价数据，请检查输入格式。"
 
-    # 2. 构造 DataFrame（列名需匹配 ingestion.py 的 COLUMN_MAP）
+    # 2. 构造 DataFrame（增强字段兼容性）
     rows = []
     for r in rates_data:
+        # 智能查找字段（处理 AI 可能返回的不同 key）
+        pol = r.get("pol_code") or r.get("pol") or r.get("POL")
+        pod = r.get("pod_code") or r.get("pod") or r.get("POD")
+        carrier = r.get("carrier") or r.get("Carrier") or r.get("CARRIER")
+        
         rows.append({
-            "POL": r.get("pol_code", ""),
-            "POD": r.get("pod_code", ""),
-            "Carrier": r.get("carrier", ""),
-            "20GP": r.get("price_20gp"),
-            "40GP": r.get("price_40gp"),
-            "40HQ": r.get("price_40hq"),
-            "Currency": r.get("currency", "USD"),
-            "ETD": r.get("etd"),
-            "TT(Days)": r.get("tt_days"),
+            "POL": pol,
+            "POD": pod,
+            "Carrier": carrier,
+            "20GP": r.get("price_20gp") or r.get("20GP"),
+            "40GP": r.get("price_40gp") or r.get("40GP"),
+            "40HQ": r.get("price_40hq") or r.get("40HQ"),
+            "Currency": r.get("currency") or r.get("Currency") or "USD",
+            "ETD": r.get("etd") or r.get("ETD"),
+            "TT(Days)": r.get("tt_days") or r.get("tt"),
             "Valid From": r.get("valid_from"),
             "Valid To": r.get("valid_to"),
-            "Remarks": r.get("remarks", ""),
+            "Remarks": r.get("remarks") or r.get("备注", ""),
         })
 
     df = pd.DataFrame(rows)
