@@ -6,9 +6,9 @@ FFORS 机器人交互接口 (Bot Webhooks)
 import base64
 import hashlib
 import hmac
+import httpx
 from typing import Any, Dict
-
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Header, HTTPException, Request, BackgroundTasks
 from sqlalchemy import select
 
 from app.config import settings
@@ -51,6 +51,7 @@ def verify_dingtalk_signature(timestamp: str, sign: str) -> bool:
 @router.post("/dingtalk/receive", summary="钉钉机器人回调")
 async def receive_dingtalk_message(
     request: Request,
+    background_tasks: BackgroundTasks,
     timestamp: str = Header(None),
     sign: str = Header(None)
 ) -> Dict[str, Any]:
@@ -68,14 +69,35 @@ async def receive_dingtalk_message(
     if not text_content:
         return {"msgtype": "text", "text": {"content": "我没有收到任何文本哦。"}}
 
-    # ─── 一次 AI 调用：同时完成分类 + 参数提取 ───
-    intent = await parse_intent(text_content)
+    # 将耗时任务放入后台，避免钉钉 3 秒超时
+    background_tasks.add_task(async_process_dingtalk, payload, text_content)
 
-    if intent.intent_type == "import":
-        return await _handle_import(text_content)
-    else:
-        return await _handle_query(intent)
+    return {"msgtype": "empty"}
 
+
+async def async_process_dingtalk(payload: Dict[str, Any], text_content: str):
+    """后台异步处理钉钉消息并回调 sessionWebhook"""
+    try:
+        intent = await parse_intent(text_content)
+
+        if intent.intent_type == "import":
+            result_msg = await _handle_import(text_content)
+        else:
+            result_msg = await _handle_query(intent)
+            
+        session_webhook = payload.get("sessionWebhook")
+        if session_webhook:
+            async with httpx.AsyncClient() as client:
+                await client.post(session_webhook, json=result_msg)
+        else:
+            logger.warning("未找到 sessionWebhook，无法异步回复钉钉消息")
+    except Exception as e:
+        logger.error(f"异步处理钉钉消息失败: {e}")
+        session_webhook = payload.get("sessionWebhook")
+        if session_webhook:
+            error_msg = {"msgtype": "text", "text": {"content": f"❌ 处理失败: {e}"}}
+            async with httpx.AsyncClient() as client:
+                await client.post(session_webhook, json=error_msg)
 
 # ─────────────────────────────────────────────
 # 查价流程
