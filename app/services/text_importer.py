@@ -15,50 +15,49 @@ from app.utils.logger import get_logger
 logger = get_logger("ffors.services.text_importer")
 
 EXTRACT_PROMPT = """你是一个顶级的货代海运报价解析专家。
-请从以下用户输入中提取所有运价信息，并整理为标准 JSON 数组。
+请从以下文本中提取所有运价信息，并整理为标准 JSON 数组。
 
 ### 核心解析规则：
-1. **地名硬映射 (必须遵守)**：
-   - 上海 -> CNSHA, 洛杉矶 -> USLAX, 西雅图 -> USSEA, 纽约 -> USNYC, 鹿特丹 -> NLRTM, 汉堡 -> DEHAM
+1. **港口转换 (关键)**：
+   - 将所有提到的港口中文名转换为标准 **UN/LOCODE 五字码**（如：上海->CNSHA, 洛杉矶->USLAX, 长滩->USLGB, 马尼拉->PHMNL, 奥克兰->USOAK 等）。
 2. **识别层级结构**：
    - 文本可能具有层级：起运港(POL) -> 目的港(POD) -> 船公司明细。
-   - 如果某行提到"上海出"，后续明细默认 POL 均为 "CNSHA"。
-3. **箱型识别**：
-   - `20GP`/`小柜` -> price_20gp；`40GP`/`大柜` -> price_40gp；`40HQ`/`高柜`/`高箱`/`40'HQ` -> price_40hq。
+   - 如果某行提到"XX出"，后续明细默认 POL 均为该港口。
+3. **价格与箱型识别**：
+   - 精准识别 20GP, 40GP, 40HQ 价格。
+   - `小柜` -> 20GP, `大柜` -> 40GP, `高箱/高柜/40'HQ` -> 40HQ。
 4. **关键转换**：
-   - 长荣 -> EMC, 马士基 -> MSK, 中远 -> COSCO, 地中海 -> MSC, 达飞 -> CMA, 赫伯罗特 -> HPL, 万海 -> WHL。
-   - "直达" -> route_type: "DIRECT", "中转" -> route_type: "TRANSIT"。
-5. **日期处理**：
-   - "船期周 5" -> 请在 etd 字段推算一个近期日期（如 2026-05-01），并在 remarks 记录。
+   - 船公司映射为代码：长荣 -> EMC, 马士基 -> MSK, 中远 -> COSCO, 地中海 -> MSC, 达飞 -> CMA, 赫伯罗特 -> HPL, 万海 -> WHL。
+   - 提取并补全日期（当前年份 2026），识别直达(DIRECT)/中转(TRANSIT)。
 
 ### 待解析文本：
 "{user_text}"
 
-你必须只返回 JSON 数组 [{{...}}]，严禁输出任何解释文字或代码块标签。"""
+你必须只返回 JSON 数组 [{{...}}]，严禁输出任何解释文字。"""
 
 
 async def extract_rates_from_text(user_text: str) -> Optional[list[dict]]:
     """
     调用 AI 模型从自由文本中提取运价数据。
-    优先级：MiniMax -> DeepSeek -> Gemini (3.1 -> 2.5 -> 1.5)
+    优先级：DeepSeek -> MiniMax -> Gemini (3.1 -> 1.5)
     """
     prompt = EXTRACT_PROMPT.format(user_text=user_text)
 
-    # --- 引擎 1: MiniMax ---
-    try:
-        result = await _call_minimax_extract(prompt)
-        if result: return result
-    except Exception as e:
-        logger.warning(f"[MiniMax] 提取失败: {e}")
-
-    # --- 引擎 2: DeepSeek ---
+    # --- 引擎 1: DeepSeek (逻辑最强) ---
     try:
         result = await _call_deepseek_extract(prompt)
         if result: return result
     except Exception as e:
         logger.warning(f"[DeepSeek] 提取失败: {e}")
 
-    # --- 引擎 3: Gemini (多版本回退) ---
+    # --- 引擎 2: MiniMax ---
+    try:
+        result = await _call_minimax_extract(prompt)
+        if result: return result
+    except Exception as e:
+        logger.warning(f"[MiniMax] 提取失败: {e}")
+
+    # --- 引擎 3: Gemini ---
     for model_version in ["gemini-1.5-pro", "gemini-1.5-flash"]:
         try:
             result = await _call_gemini_extract(prompt, model_version)
