@@ -57,7 +57,8 @@ class OceanRate(Base):
     price_40gp = Column(Numeric(10, 2), nullable=True, comment="40GP 价格 (USD)")
     price_40hq = Column(Numeric(10, 2), nullable=True, comment="40HQ 价格 (USD)")
     currency = Column(String(5), nullable=False, default="USD", comment="币种")
-
+    route_type = Column(String(20), nullable=True, comment="直达/中转 (Direct/Transit)")
+    transit_port = Column(String(50), nullable=True, comment="中转港")
     # --- 时效信息 ---
     etd = Column(Date, nullable=True, comment="预计开航日")
     tt_days = Column(Integer, nullable=True, comment="航程天数")

@@ -18,7 +18,11 @@ logger = get_logger("ffors.services.radar")
 class RadarRecommendation(BaseModel):
     carrier: str
     price: float
+    route_type: Optional[str]
+    transit_port: Optional[str]
+    etd_weekday: Optional[str]
     tt_days: Optional[int]
+    validity_period: Optional[str]
     stability_score: float  # 波动率越小分数越高
     risk_score: float       # 风险越小分数越高
     total_score: float      # 满分 100
@@ -138,13 +142,28 @@ async def get_route_recommendations(
             wow = r.wow_40gp  # 40HQ 暂时借用 40GP 的 wow，或者忽略
 
         if price:
+            # 格式化日期为星期
+            etd_weekday = None
+            if r.etd:
+                weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+                etd_weekday = weekdays[r.etd.weekday()]
+
+            # 格式化有效期
+            validity_period = None
+            if r.valid_from and r.valid_to:
+                validity_period = f"{r.valid_from.strftime('%Y.%m.%d')}-{r.valid_to.strftime('%Y.%m.%d')}"
+                
             valid_rates.append({
                 "carrier": r.carrier,
                 "price": price,
+                "route_type": getattr(r, "route_type", None),
+                "transit_port": getattr(r, "transit_port", None),
+                "etd_weekday": etd_weekday,
                 "tt_days": r.tt_days,
+                "validity_period": validity_period,
                 "wow": wow,
                 "risk": r.risk_score,
-                "remarks": r.remarks
+                "remarks": r.remarks or ""
             })
             
     if not valid_rates:
@@ -173,7 +192,11 @@ async def get_route_recommendations(
         recommendations.append(RadarRecommendation(
             carrier=r["carrier"],
             price=r["price"],
+            route_type=r["route_type"],
+            transit_port=r["transit_port"],
+            etd_weekday=r["etd_weekday"],
             tt_days=r["tt_days"],
+            validity_period=r["validity_period"],
             stability_score=round(stability_score, 1),
             risk_score=r["risk"] if r["risk"] is not None else 50.0,
             total_score=total_score,
@@ -185,7 +208,12 @@ async def get_route_recommendations(
     recommendations.sort(key=lambda x: x.total_score, reverse=True)
     
     if recommendations:
-        recommendations[0].tags.append("👑 综合最优")
+        top_rec = recommendations[0]
+        # 将综合最优追加到备注中
+        if top_rec.remarks:
+            top_rec.remarks += " | 👑 综合最优"
+        else:
+            top_rec.remarks = "👑 综合最优"
         
         # 找绝对低价
         cheapest = min(recommendations, key=lambda x: x.price)

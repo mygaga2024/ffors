@@ -138,21 +138,26 @@ async def _handle_query(intent) -> Dict[str, Any]:
     else:
         lines = [
             f"### ⚡ FFORS 比价雷达 ({intent.pol_code} ➔ {intent.pod_code})",
-            f"**箱型**: {intent.container_type} | **检索结果**: {len(recs)} 条",
+            f"**箱型**: {intent.container_type} | **检索结果**: {min(len(recs), 5)} 条",
             ""
         ]
         
-        for i, r in enumerate(recs[:3]):
-            tag_str = " ".join(r['tags']) if r['tags'] else ""
-            medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "🔸"
-            tt_str = f"{r['tt_days']}天" if r['tt_days'] else "未知时效"
+        lines.append(f"| 船公司 | {intent.container_type} | 直达/中转 | 中转港 | 船期 | 航程(天) | 有效期 | 备注 |")
+        lines.append("|---|---|---|---|---|---|---|---|")
+        
+        for i, r in enumerate(recs[:5]):
+            carrier = r.get('carrier') or "-"
+            price = f"${r.get('price')}" if r.get('price') else "-"
+            route_type = r.get('route_type') or "-"
+            transit_port = r.get('transit_port') or "-"
+            etd_weekday = r.get('etd_weekday') or "-"
+            tt_days = str(r.get('tt_days')) if r.get('tt_days') else "-"
+            validity_period = r.get('validity_period') or "-"
+            remarks = r.get('remarks') or "-"
             
-            lines.append(f"{medal} **{r['carrier']}** {tag_str}")
-            lines.append(f"- 💰 价格: **${r['price']}** | ⏱️ 时效: {tt_str}")
-            lines.append(f"- ⚖️ 综合得分: {r['total_score']} (稳定性: {r['stability_score']})")
-            if r['remarks']:
-                lines.append(f"- 📝 备注: {r['remarks']}")
-            lines.append("")
+            lines.append(f"| {carrier} | {price} | {route_type} | {transit_port} | {etd_weekday} | {tt_days} | {validity_period} | {remarks} |")
+
+        lines.append("")
             
         lines.append(f"**🤖 RAG 风险交叉验证锦囊:**")
         lines.append(f"> {risk}")
