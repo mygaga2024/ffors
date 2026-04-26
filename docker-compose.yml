@@ -34,9 +34,7 @@ services:
 
   # --- FFORS API 服务 ---
   ffors-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/mygaga2024/ffors:latest
     container_name: ffors-api
     restart: unless-stopped
     depends_on:
